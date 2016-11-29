@@ -1,0 +1,73 @@
+<div><!-- questions.answerForm.hbs -->
+    <form class="question-replay" data-js="form-question-replay"
+          action="https://questions.mercadolibre.com.ar/#/preguntas/vendedor/4141557199"
+          method="post">
+
+        <textarea class="question-replay__textarea"
+                  data-js="question-replay__textarea" name="text" rows="1"
+                  cols="40" maxlength="2000" disabled=""
+                  style="overflow-y: hidden;"></textarea>
+
+        <!-- mensaje de error de validación -->
+        <div class="ch-box-icon ch-box-error empty-field">
+            <i class="ch-icon-remove-sign"></i>
+            Ups, olvidaste escribir tu respuesta.
+        </div>
+
+
+        <div class="ch-box-icon ch-box-warn special-chars"
+             data-js="special-chars">
+            <i class="ch-icon-warning-sign"></i>No uses caracteres
+            especiales
+        </div>
+
+
+        <div class="question-actions question-actions--classified u--clearfix">
+            <div class="question-actions css-dropdown">
+                <input type="checkbox"
+                       class="question-actions__input css-dropdown-input"
+                       id="question-actions__trigger">
+                <div class="question-actions__content css-dropdown-content u--clearfix">
+                    <label class="question-actions__btn css-dropdown-label mobile-visible"
+                           aria-controls="question-actions__trigger"
+                           tabindex="0" for="question-actions__trigger">
+                        <i class="question-actions__icon icon-ellipsis"><span>Más acciones</span></i>
+                    </label>
+                    <div class="question-replay__btn-container">
+                        <button type="submit"
+                                data-js="question-replay__btn-submit"
+                                class="question-replay__btn-submit ch-btn"
+                                disabled="">Responder
+                        </button>
+                    </div>
+                    <a href="https://questions.mercadolibre.com.ar/#/preguntas/vendedor"
+                       class="question-replay__btn-cancel mobile-hidden u--no-visited"
+                       data-js="question-btn-cancel">Cancelar</a>
+                    <!-- <a href="#/deleteQuestion/4141557199" class="question-btn-delete mobile-hidden u--no-visited"><span class="ch-icon-trash"></span> Eliminar pregunta</a> -->
+                    <ul class="question-actions__options css-dropdown-options">
+                        <li class="question-actions__mail">
+                            <a href="mailto:apanale.6rhn68@mail.mercadolibre.com">
+                                <span class="ch-icon-envelope-alt"></span>
+                                <span class="mobile-visible">Enviar mail</span>
+                                <span class="mobile-hidden">apanale.6rhn68@mail.mercadolibre.com</span>
+                            </a>
+                        </li>
+                        <li class="question-actions__telephone">
+                            <span class="ch-icon-phone"></span>1558156478
+                        </li>
+                        <li class="question-actions__delete">
+                            <!-- link -->
+                            <a class="u--no-visited"
+                               href="https://questions.mercadolibre.com.ar/#/preguntas/vendedor/4141557199/eliminar"
+                               data-js="delete-modal-trigger"><span
+                                    class="ch-icon-trash"></span>Eliminar
+                                pregunta</a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+    </form>
+    <!-- /questions.answerForm.hbs -->
+</div>
