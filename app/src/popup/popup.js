@@ -1,10 +1,8 @@
 'use strict';
 
-var a = 2;
-var b = function b() {
-  console.log(a);
-  // alert('hola');
-};
-b();
+$(document).on("ready", function () {
 
-console.log('\'Allo \'Allo! Popup');
+  setTimeout(function () {
+    location.href = location.origin + "/src/popup/pregus.html";
+  }, 5);
+});
