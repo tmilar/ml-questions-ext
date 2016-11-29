@@ -22,7 +22,37 @@ var waitMe = {
   }
 };
 
-$(document).on("ready", function () {
 
-  waitMe.start({selector: '.container', text: "iniciando..."});
+function startLogin() {
+  return new Promise(window.oauth2.start.bind(window.oauth2));
+}
+
+function configureLogin() {
+  window.oauth2.options.full_url = "http://auth.mercadolibre.com.ar/authorization?response_type=token&client_id=3791482542047777";
+}
+
+$(document).on("ready", function () {
+  configureLogin();
+  waitMe.start({selector: '.container', text: "iniciando sesion..."});
+
+  startLogin()
+    .then(function () {
+      console.log("Login good!");
+    })
+    .then(function () {
+      // TODO handle user_id response data?
+      return Promise.resolve($.ajax({
+        type: 'GET',
+        url: 'https://api.mercadolibre.com/users/me?access_token=' + window.oauth2.getToken().token,
+        success: function (data) {
+          console.log("sucess! ", data);
+        }
+      }))
+    })
+    .catch(function (err) {
+      console.error("Login bad: " + err.stack);
+    })
+    .finally(function () {
+      waitMe.stop();
+    });
 });
