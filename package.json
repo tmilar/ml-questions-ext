@@ -38,11 +38,7 @@
       "chrome": true
     },
     "rules": {
-      "eol-last": 0,
-      "quotes": [
-        2,
-        "single"
-      ]
+      "eol-last": 0
     }
   }
 }
