@@ -1,3 +1,20 @@
 body {
   padding: 20px;
 }
+/* Stop popup default scrolling */
+.container {
+  max-height: 584px;
+  overflow: hidden;
+}
+h1 {
+  font-size: 2em;
+}
+.content {
+  min-height: 200px;
+}
+
+*:before, *:after {
+  -webkit-box-sizing: border-box;
+  -moz-box-sizing: border-box;
+  box-sizing: border-box;
+}

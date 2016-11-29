@@ -7,24 +7,26 @@
     <!-- endbower -->
     <!-- endbuild -->
     <!-- build:css css/main.css -->
+    <link type="text/css" rel="stylesheet" href="lib/jquery-waitMe/waitMe.css">
 
     <link href="css/main.css" rel="stylesheet">
     <!-- endbuild -->
   </head>
   <body>
-    <h3>MeliPreguntas</h3>
-    <p>Esta app esta buena o no?</p>
+
+    <div class="main container">
+      <h1>MeliPreguntas</h1>
+      <p>Esta app esta buena o no?</p>
+    </div>
 
     <!-- build:js src/popup-vendor.js -->
     <!-- bower:js -->
     <!-- endbower -->
     <!-- endbuild -->
 
-    <div class="main container">
-
-    </div>
     <!-- build:js src/popup.js -->
     <script type="text/javascript" src="lib/jquery-2.1.1.min.js"></script>
+    <script type="text/javascript" src="lib/jquery-waitMe/waitMe.js"></script>
     <script src="src/popup/popup.js"></script>
     <!-- endbuild -->
   </body>
