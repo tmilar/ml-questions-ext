@@ -1,0 +1,10 @@
+{
+  "appName": {
+    "message": "MeliPreguntas",
+    "description": "The name of the application"
+  },
+  "appDescription": {
+    "message": "Visualiza y responde tus preguntas de MercadoLibre facilmente desde un solo lugar!",
+    "description": "The description of the application"
+  }
+}
