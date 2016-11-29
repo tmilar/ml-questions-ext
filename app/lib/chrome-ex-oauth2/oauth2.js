@@ -104,10 +104,15 @@
 
                 var accessToken = url.match(/access_token=([\w\/\-]+)/)[1];
                 var expireTime = url.match(/expires_in=([\w\/\-]+)/)[1];
+                var userId = url.match(/user_id=([\w\/\-]+)/)[1];
+
                 var expireDate = new Date(self.startRequestTime.getTime() - expireTime);
 
                 window.localStorage.setItem(this.options.key, accessToken);
                 window.localStorage.setItem(this.options.key_expire, expireDate);
+                if (userId && userId.length > 0 && this.options.user_id) {
+                    window.localStorage.setItem(this.options.user_id, userId);
+                }
                 console.log("stored access token ", accessToken, " from url ", url);
                 _removeLoginTab();
                 return true;
@@ -159,14 +164,15 @@
          *
          * @return {token, expires} token if it exists, empty {} if not.
          */
-        getToken: function () {
+        getAuth: function () {
 
             if (!window.localStorage.getItem(this.options.key))
                 return {};
 
             return {
                 token: window.localStorage.getItem(this.options.key),
-                expires: window.localStorage.getItem(this.options.key_expire)
+                expires: window.localStorage.getItem(this.options.key_expire),
+                user_id: window.localStorage.getItem(this.options.user_id)
             };
         },
 
@@ -176,10 +182,13 @@
         clearToken: function () {
             delete window.localStorage.removeItem(this.options.key);
             delete window.localStorage.removeItem(this.options.key_expire);
+            if (this.options.user_id) {
+                delete window.localStorage.removeItem(this.options.user_id);
+            }
         },
 
         checkLogin: function () {
-            var tokenContainer = this.getToken();
+            var tokenContainer = this.getAuth();
 
             if (!tokenContainer || !tokenContainer.token || tokenContainer.expires < new Date()) {
                 this.clearToken();

@@ -24,18 +24,9 @@ var waitMe = {
 
 
 function startLogin() {
-  return new Promise(window.oauth2.start.bind(window.oauth2));
-}
-
-function configureLogin() {
-  window.oauth2.options.full_url = "http://auth.mercadolibre.com.ar/authorization?response_type=token&client_id=3791482542047777";
-}
-
-$(document).on("ready", function () {
-  configureLogin();
   waitMe.start({selector: '.container', text: "iniciando sesion..."});
 
-  startLogin()
+  return new Promise(window.oauth2.start.bind(window.oauth2))
     .then(function () {
       console.log("Login good!");
     })
@@ -43,16 +34,46 @@ $(document).on("ready", function () {
       // TODO handle user_id response data?
       return Promise.resolve($.ajax({
         type: 'GET',
-        url: 'https://api.mercadolibre.com/users/me?access_token=' + window.oauth2.getToken().token,
+        url: 'https://api.mercadolibre.com/users/me?access_token=' + window.oauth2.getAuth().token,
         success: function (data) {
-          console.log("sucess! ", data);
+          console.log("login success! ", data);
         }
       }))
     })
+    .then(loginSuccess)
     .catch(function (err) {
       console.error("Login bad: " + err.stack);
     })
     .finally(function () {
       waitMe.stop();
     });
+}
+
+function configureLogin() {
+  window.oauth2.options.full_url = "http://auth.mercadolibre.com.ar/authorization?response_type=token&client_id=3791482542047777";
+  window.oauth2.options.user_id = "user_id";
+}
+
+function getMeliQuestions() {
+}
+
+function loginSuccess() {
+  return getMeliQuestions()
+}
+
+function _checkAccessToken() {
+  var userLoggedIn = window.oauth2.checkLogin();
+  console.log("logged? ", userLoggedIn);
+  return userLoggedIn;
+}
+
+$(document).on("ready", function () {
+  configureLogin();
+
+  if (!_checkAccessToken()) {
+    startLogin();
+    return;
+  }
+
+  loginSuccess();
 });
