@@ -103,10 +103,10 @@
                 var params = url.split('#')[1];
 
                 var accessToken = url.match(/access_token=([\w\/\-]+)/)[1];
-                var expireTime = url.match(/expires_in=([\w\/\-]+)/)[1];
+                var expireTime = Number(url.match(/expires_in=([\w\/\-]+)/)[1]);
                 var userId = url.match(/user_id=([\w\/\-]+)/)[1];
 
-                var expireDate = new Date(self.startRequestTime.getTime() - expireTime);
+                var expireDate = new Date(self.startRequestTime.getTime() + ( expireTime * 1000));
 
                 window.localStorage.setItem(this.options.key, accessToken);
                 window.localStorage.setItem(this.options.key_expire, expireDate);
@@ -190,7 +190,7 @@
         checkLogin: function () {
             var tokenContainer = this.getAuth();
 
-            if (!tokenContainer || !tokenContainer.token || tokenContainer.expires < new Date()) {
+            if (!tokenContainer || !tokenContainer.token || new Date(tokenContainer.expires) < new Date()) {
                 this.clearToken();
                 return false;
             }
