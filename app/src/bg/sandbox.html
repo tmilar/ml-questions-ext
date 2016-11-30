@@ -1,0 +1,53 @@
+<!--
+  - Copyright (c) 2012 The Chromium Authors. All rights reserved.
+  - Use of this source code is governed by a BSD-style license that can be
+  - found in the LICENSE file.
+  -->
+<!doctype html>
+<html>
+<head>
+    <!--<script src="handlebars.min.js"></script>-->
+    <!-- build:js src/background-vendor.js -->
+    <!-- bower:js -->
+    <script src="/bower_components/handlebars/handlebars.js"></script>
+    <script src="/bower_components/mustache.js/mustache.js"></script>
+    <!-- endbower -->
+    <!-- endbuild -->
+
+</head>
+<body>
+<script id="hello-world-template" type="text/x-handlebars-template">
+    <div class="entry">
+        <h1>Hello, {{thing}}!</h1>
+    </div>
+</script>
+<script>
+    var templates = [];
+
+    /// basic example source 'hello'
+    var source = document.getElementById('hello-world-template').innerHTML;
+    templates['hello'] = Handlebars.compile(source);
+
+    // Set up message event handler:
+    window.addEventListener('message', function (event) {
+        debugger;
+        var command = event.data.command;
+        var name = event.data.name;
+        switch (command) {
+            case 'render':
+                event.source.postMessage({
+                    name: name,
+                    html: templates[name] ? templates[name](event.data.context) : undefined
+                }, event.origin);
+                break;
+
+            case 'new':
+                // Register new hbs template, received via message
+                templates[event.data.name] = Handlebars.compile(event.data.source);
+                event.source.postMessage({name: name, success: true}, event.origin);
+                break;
+        }
+    });
+</script>
+</body>
+</html>
