@@ -1,17 +1,11 @@
-<!-- Servicio -->
+<!-- Servicio o Product -->
 <section data-js="ml-card" class="card"><!-- questions.ItemsGroup.hbs -->
     <div data-js="item">
-      {{#each items}}
-          <!--{{partial item}}-->
-      {{/each}}
+        {{>item item}}
     </div>
-
 
     <div data-js="question">
-      {{#each questions}}
-          <!--partial question_group-->
-      {{/each}}
+        {{>questions-group questions}}
     </div>
-
     <!-- / questions.ItemsGroup.hbs -->
 </section>

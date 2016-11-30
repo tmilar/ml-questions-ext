@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+
+    <title>Preguntas - MercadoLibre</title>
+</head>
+
+<body class="https desktop js vendedor" data-device="desktop" data-site="MLA" data-country="AR" data-company="ML">
+
+<h3>Preguntas abajo!</h3>
+
+<main role="main" id="main">
+    <div class="nav-bounds">
+
+        <section class="app-container clearfix" id="app-container">
+            <div><!-- questions.questions.main -->
+
+                <header class="myml-header u--clearfix" data-js="header"><!-- questions.header -->
+
+                    <h1 class="main-title title title--primary" data-js="main-title">
+                        Preguntas (<span class="questions-total" data-js="questions-total">{{total}}</span>)
+                    </h1>
+
+                    <div class="open-all">
+                        <input type="checkbox" data-js="open-all" name="questions-open-checkbox"
+                               id="questions-open-checkbox" value="">
+                        <label for="questions-open-checkbox">Desplegar todas</label>
+                    </div>
+
+                </header>
+                <!-- /questions.header -->
+
+                <div id="main-questions" class="seller">
+                    {{#each itemsGroups}}
+                        {{> items-group this}}
+                    {{/each}}
+                </div>
+
+                <div class="ch-loading ch-loading-small pagination-link-spinner"
+                     data-js="pagination-link-spinner"></div>
+                <!-- /questions.questions.main -->
+            </div>
+        </section>
+    </div>
+</main>
+
+
+</body>
+</html>

@@ -1,7 +1,7 @@
 <div><!-- questions.questionsGroup.hbs -->
     <div class="questions-container" data-js="questions-container">
       {{#each questions}}
-          <!--{{partial question}}-->
+          {{> question this}}
       {{/each}}
     </div>
     <!-- / questions.questionsGroup.hbs -->

@@ -1,0 +1,61 @@
+<article data-js="questions-answer-group"
+         class="table-list__item question question--question {{#if blocked}}question--blocked{{/if}} question--{{#if collapse}}closed{{else}}opened{{/if}}"
+         id="4141557199">    <!-- questions.question.hbs -->
+    <div data-js="questions-old"></div>
+
+    <div class="action-block action-block--alt" data-js="question__link">
+        <!--data-href="#/preguntas/vendedor/4141557199"-->
+        <div class="u--arrange-fit">
+            <i class="question__icon ch-icon-comment"></i>
+        </div>
+        <div class="u--arrange-fill">
+            <p class="question__text" data-js="question-row-text">
+                {{text}}
+            </p>
+
+            <p class="question__date" data-js="question-row-date">
+                {{date_created}}
+            </p>
+
+            <div class="question__info u--clearfix">
+                <a href="http://www.mercadolibre.com.ar/jm/profile?id={{from.id}}&oper=S"
+                   data-js="reputation-link" class="u--float-left u--no-visited"
+                   target="_blank">
+                    {{from.user.name}} ({{from.user.points}})
+                </a>
+            </div>
+        </div>
+    </div>
+
+    {{#if from.answered_questions}}
+        <div data-js="questions-old">
+            <div id="4420037623"><!-- questions.iteratorHistory -->
+                <div data-js="history-container" class="questions-history">
+                    <input type="checkbox" class="more-actions-input css-dropdown-input"
+                           id="old-questions-trigger4420037623">
+
+                    <div class="css-dropdown-content">
+                        <label class="questions-history__btn css-dropdown-label " tabindex="0"
+                               for="old-questions-trigger4420037623" data-js="questions-history-label">
+                            <span class="show-string">{{from.answered_questions}} preguntas anteriores</span>
+                            <span class="hide-string">Ocultar preguntas</span>
+                        </label>
+
+                        <div class="css-dropdown-options" data-js="css-dropdown-options"></div>
+                    </div>
+                </div>
+                <!-- /questions.iteratorHistory -->
+            </div>
+        </div>
+    {{/if}}
+
+    <div data-js="answer-form">
+        {{#if from.email}}
+            {{> answer-form_classified from}}
+        {{else}}
+            {{> answer-form}}
+        {{/if}}
+    </div>
+
+    <!-- /questions.question.hbs -->
+</article>

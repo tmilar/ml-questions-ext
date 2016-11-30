@@ -5,7 +5,8 @@
 
         <textarea class="question-replay__textarea"
                   data-js="question-replay__textarea" name="text" rows="1"
-                  cols="40" maxlength="2000" disabled=""
+                  cols="40" maxlength="2000"
+                  placeholder="Escribe tu respuesta..."
                   style="overflow-y: hidden;"></textarea>
 
         <!-- mensaje de error de validación -->
@@ -13,7 +14,6 @@
             <i class="ch-icon-remove-sign"></i>
             Ups, olvidaste escribir tu respuesta.
         </div>
-
 
         <div class="ch-box-icon ch-box-warn special-chars"
              data-js="special-chars">
@@ -46,22 +46,21 @@
                     <!-- <a href="#/deleteQuestion/4141557199" class="question-btn-delete mobile-hidden u--no-visited"><span class="ch-icon-trash"></span> Eliminar pregunta</a> -->
                     <ul class="question-actions__options css-dropdown-options">
                         <li class="question-actions__mail">
-                            <a href="mailto:apanale.6rhn68@mail.mercadolibre.com">
+                            <a href="mailto:{{email}}">
                                 <span class="ch-icon-envelope-alt"></span>
                                 <span class="mobile-visible">Enviar mail</span>
-                                <span class="mobile-hidden">apanale.6rhn68@mail.mercadolibre.com</span>
+                                <span class="mobile-hidden">{{email}}</span>
                             </a>
                         </li>
                         <li class="question-actions__telephone">
-                            <span class="ch-icon-phone"></span>1558156478
+                            <span class="ch-icon-phone"></span>({{phone.area_code}}) {{phone.number}}
                         </li>
                         <li class="question-actions__delete">
                             <!-- link -->
                             <a class="u--no-visited"
                                href="https://questions.mercadolibre.com.ar/#/preguntas/vendedor/4141557199/eliminar"
                                data-js="delete-modal-trigger"><span
-                                    class="ch-icon-trash"></span>Eliminar
-                                pregunta</a>
+                                    class="ch-icon-trash"></span>Eliminar pregunta</a>
                         </li>
                     </ul>
                 </div>

@@ -4,14 +4,12 @@
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 
     <title>Preguntas - MercadoLibre</title>
-    <link rel="stylesheet" href="../../../../css/meli.css">
-
 </head>
 
 <body class="https desktop js vendedor" data-device="desktop" data-site="MLA" data-country="AR" data-company="ML">
 
-<h3>MeliPreguntas</h3>
-<p>Esta app esta buena o no?</p>
+<h3>SAMPLE MAIN QUESTIONS</h3>
+<p>esto es un ejemplo. TODO pisar por posta.</p>
 
 <main role="main" id="main">
     <div class="nav-bounds">
@@ -23,8 +21,7 @@
                 <header class="myml-header u--clearfix" data-js="header">
 
                     <h1 class="main-title title title--primary" data-js="main-title">
-                        Preguntas
-                        (<span class="questions-total" data-js="questions-total">2</span>)
+                        Preguntas (<span class="questions-total" data-js="questions-total">{{questions.lenght}}</span>)
                     </h1>
 
                     <div class="open-all">
@@ -40,7 +37,7 @@
                 <div id="main-questions" class="seller">
 
                   {{#each itemsGroups}}
-                      <!--{{partial 'item-group'}}->
+                      <!--{{partial 'item-group'}}-->
                   {{/each}}
 
                 </div>

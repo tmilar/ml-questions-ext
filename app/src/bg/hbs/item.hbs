@@ -1,0 +1,45 @@
+<div><!-- questions.item.hbs -->
+
+    <!-- NOT NEEDED for now -->
+    <!--<div class="item-status">-->
+    <!--<div class="ch-box-icon ch-box-warn">-->
+    <!--<i class="ch-icon-"></i> Publicación finalizada-->
+    <!--</div>-->
+    <!--</div>-->
+
+    <article class="item item-header" data-id="item-{{id}}" data-js="item">
+        <a href="{{permalink}}" class="u--arrange-fit item__image">
+            <img src="{{#if imgUrl}}{{imgIurl}}{{else}}/css/834321-MLA20752827948_062016-I.jpg"{{/if}}
+                    alt="Imágen producto" width="90" height="90">
+        </a>
+        <div class="u--arrange-fill item__content">
+            <h2 class="item__title">
+                <a href="{{permalink}}" class="u--no-visited">{{title}}</a>
+            </h2>
+
+            <div class="item__price">
+                <strong class="ch-price">
+                    <i class="ch-price-symbol">$</i>{{price}}
+                </strong>
+
+                <p class="item__data item__data--quantity">
+                    <span class="u--text-light quantity">{{#if available_quantity}}x {{available_quantity}}disponible{{else}}Sin stock{{/if}} </span>
+                </p>
+            </div>
+
+
+            <p class="item__data item__data--end-date">
+                <span class="ch-icon-time"></span>
+                Finaliza: {{stop_time}}
+            </p>
+
+            <a class="item__edit u--no-visited"
+               href="https://vender.mercadolibre.com.ar/item/update?itemId={{id}}"
+               target="_blank">
+                <i class="ch-icon-pencil"></i>
+                <small class="edit-text">Modificar</small>
+            </a>
+        </div>
+    </article>
+    <!-- / questions.item.hbs -->
+</div>
