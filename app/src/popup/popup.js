@@ -64,8 +64,15 @@ function getMeliQuestions() {
     }));
 }
 
+function showQuestions(questionsData) {
+    questionsData = _.pick(questionsData, ['total', 'questions']);
+    questionsData.questions = _.groupBy(questionsData.questions, 'item_id');
+    // TODO get item info by questionData group key
+    console.log("questions received! ", questionsData);
+}
+
 function loginSuccess() {
-  return getMeliQuestions()
+    return getMeliQuestions().then(showQuestions);
 }
 
 function _checkAccessToken() {
