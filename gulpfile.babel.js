@@ -65,9 +65,9 @@ gulp.task('chromeManifest', () => {
     .pipe($.chromeManifest({
       buildnumber: true,
       background: {
-        target: 'src/background.js',
+        target: 'src/bg/background.js',
         exclude: [
-          'src/helper/chromereload.js'
+          'src/bg/chromereload.js'
         ]
       }
     }))

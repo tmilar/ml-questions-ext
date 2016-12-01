@@ -10,7 +10,7 @@
   "default_locale": "en",
   "background": {
     "scripts": [
-      "src/helper/chromereload.js",
+      "src/bg/chromereload.js",
       "src/bg/background.js"
     ]
   },
