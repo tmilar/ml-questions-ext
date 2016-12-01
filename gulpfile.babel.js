@@ -42,14 +42,14 @@ gulp.task('images', () => {
       // as hooks for embedding and styling
       svgoPlugins: [{cleanupIDs: false}]
     }))
-    .on('error', function (err) {
-      console.log(err);
-      this.end();
-    })))
+      .on('error', function (err) {
+        console.log(err);
+        this.end();
+      })))
     .pipe(gulp.dest('dist/images'));
 });
 
-gulp.task('html',  () => {
+gulp.task('html', () => {
   return gulp.src('app/*.html')
     .pipe($.useref({searchPath: ['.tmp', 'app', '.']}))
     .pipe($.sourcemaps.init())
@@ -70,20 +70,20 @@ gulp.task('chromeManifest', () => {
           'src/helper/chromereload.js'
         ]
       }
-  }))
-  .pipe($.if('*.css', $.cleanCss({compatibility: '*'})))
-  .pipe($.if('*.js', $.sourcemaps.init()))
-  .pipe($.if('*.js', $.uglify()))
-  .pipe($.if('*.js', $.sourcemaps.write('.')))
-  .pipe(gulp.dest('dist'));
+    }))
+    .pipe($.if('*.css', $.cleanCss({compatibility: '*'})))
+    .pipe($.if('*.js', $.sourcemaps.init()))
+    .pipe($.if('*.js', $.uglify()))
+    .pipe($.if('*.js', $.sourcemaps.write('.')))
+    .pipe(gulp.dest('dist'));
 });
 
 gulp.task('babel', () => {
   return gulp.src('app/src/**/*.js')
-      .pipe($.babel({
-        presets: ['es2015'], retainLines: true
-      }))
-      .pipe(gulp.dest('app/src'));
+    .pipe($.babel({
+      presets: ['es2015'], retainLines: true
+    }))
+    .pipe(gulp.dest('app/src'));
 });
 
 gulp.task('clean', del.bind(null, ['.tmp', 'dist']));
@@ -118,44 +118,44 @@ gulp.task('wiredep', () => {
 gulp.task('package', function () {
   var manifest = require('./dist/manifest.json');
   return gulp.src('dist/**')
-      .pipe($.zip('MeliPreguntas-' + manifest.version + '.zip'))
-      .pipe(gulp.dest('package'));
+    .pipe($.zip('MeliPreguntas-' + manifest.version + '.zip'))
+    .pipe(gulp.dest('package'));
 });
 
 
 gulp.task('hbs', () => {
-    let partials = gulp.src(['app/src/**/hbs/partials/*.hbs'])
-        .pipe($.handlebars({
-            handlebars: require('handlebars')
-        }))
-        .pipe($.wrap('Handlebars.registerPartial(<%= processPartialName(file.relative) %>, Handlebars.template(<%= contents %>));', {}, {
-            imports: {
-                processPartialName: (fileName) => {
-                    // Strip the extension and the underscore
-                    // Escape the output with JSON.stringify
-                    return JSON.stringify(path.basename(fileName, '.js'));
-                }
-            }
-        }));
+  let partials = gulp.src(['app/src/**/hbs/partials/*.hbs'])
+    .pipe($.handlebars({
+      handlebars: require('handlebars')
+    }))
+    .pipe($.wrap('Handlebars.registerPartial(<%= processPartialName(file.relative) %>, Handlebars.template(<%= contents %>));', {}, {
+      imports: {
+        processPartialName: (fileName) => {
+          // Strip the extension and the underscore
+          // Escape the output with JSON.stringify
+          return JSON.stringify(path.basename(fileName, '.js'));
+        }
+      }
+    }));
 
-    let templates = gulp.src('app/src/**/hbs/*.hbs')
-        .pipe($.handlebars({
-            handlebars: require('handlebars')
-        }))
-        .pipe($.wrap('Handlebars.template(<%= contents %>)'))
-        .pipe($.declare({
-            namespace: 'MeliPreguntasApp.templates',
-            noRedeclare: true, // Avoid duplicate declarations
-        }));
+  let templates = gulp.src('app/src/**/hbs/*.hbs')
+    .pipe($.handlebars({
+      handlebars: require('handlebars')
+    }))
+    .pipe($.wrap('Handlebars.template(<%= contents %>)'))
+    .pipe($.declare({
+      namespace: 'MeliPreguntasApp.templates',
+      noRedeclare: true, // Avoid duplicate declarations
+    }));
 
-    return merge(partials, templates)
-        .pipe($.concat('hbsTemplates.js'))
-        .pipe(gulp.dest('app/src/popup/questions/hbs'));
+  return merge(partials, templates)
+    .pipe($.concat('hbsTemplates.js'))
+    .pipe(gulp.dest('app/src/popup/questions/hbs'));
 });
 
 gulp.task('build', (cb) => {
   runSequence(
-      'lint', 'chromeManifest',
+    'lint', 'chromeManifest',
     ['hbs', 'html', 'images', 'extras'],
     'size', cb);
 });
