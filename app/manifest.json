@@ -9,11 +9,10 @@
   },
   "default_locale": "en",
   "background": {
-    "page": "src/bg/eventpage.html",
-    "persistent": false
-  },
-  "sandbox": {
-    "pages": ["src/bg/sandbox.html"]
+    "scripts": [
+      "src/helper/chromereload.js",
+      "src/bg/background.js"
+    ]
   },
   "permissions": [
     "background",
