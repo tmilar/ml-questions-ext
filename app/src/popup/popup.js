@@ -69,10 +69,13 @@ function showQuestions(questionsData) {
     questionsData.questions = _.groupBy(questionsData.questions, 'item_id');
     // TODO get item info by questionData group key
     console.log("questions received! ", questionsData);
+
+    QuestionsModule.initialize(questionsData);
 }
 
 function loginSuccess() {
-    return getMeliQuestions().then(showQuestions);
+    return getMeliQuestions()
+        .then(showQuestions);
 }
 
 function _checkAccessToken() {
