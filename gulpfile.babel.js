@@ -91,6 +91,8 @@ gulp.task('clean', del.bind(null, ['.tmp', 'dist']));
 gulp.task('watch', ['lint'], () => {
   $.livereload.listen();
 
+  gulp.watch('app/src/**/*.hbs', ['hbs']);
+
   gulp.watch([
     'app/*.html',
     'app/src/**/*.js',
