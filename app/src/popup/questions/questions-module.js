@@ -2,11 +2,39 @@
 
 var QuestionsModule = (function QuestionsModule() {
 
+    function populateItems(questionsData) {
+        if(!questionsData.total) return questionsData;
+        // for each q in data.questions
+            // q.item = findItemById(q.item_id)
+        var itemsInQuestions = _.uniq(_.map(questionsData.questions, 'item_id'));
+        var questionsByItemId = _.groupBy(questionsData.questions, 'item_id');
+
+        var itemsPromise = Promise.map(itemsInQuestions, function (item_id) {
+            var itemGetUrl = "https://api.mercadolibre.com/items/" + item_id;
+            return Promise.resolve($.get(itemGetUrl));
+        });
+
+        itemsPromise.then(function (itemsData) {
+            _.each(itemsData, function (itemData) {
+                var questionsForItem = questionsByItemId[itemData.id];
+                _.each(questionsForItem, function (q) {
+                    q.item = itemData;
+                })
+            });
+        });
+
+        return itemsPromise.thenReturn(questionsData);
+    }
+
     function initialize() {
 
         return getMeliQuestions()
             .then(populateItems)
-            .then(render);
+            .then(toItemsGroups)
+            .then(render)
+            .catch(function (err) {
+                console.error("Error al intentar recuperar info de las preguntas: " + err.stack);
+            });
     }
 
     function getMeliQuestions() {
@@ -20,7 +48,7 @@ var QuestionsModule = (function QuestionsModule() {
         }));
     }
 
-    function populateItems(questionsData) {
+    function toItemsGroups(questionsData) {
         var result = {
             total: questionsData.total,
             itemsGroups: []
@@ -65,7 +93,7 @@ var QuestionsModule = (function QuestionsModule() {
         });
         var target = $(".questions.content");
 
-        console.log("About to load questions data.. ", questionsData);
+        console.log("Loading questions data.. ", questionsData);
 
         target.html(compiledHbs);
     }
