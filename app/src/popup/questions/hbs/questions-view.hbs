@@ -24,9 +24,13 @@
                 <!-- /questions.header -->
 
                 <div id="main-questions" class="seller">
-                    {{#each itemsGroups}}
-                        {{> items-group this}}
-                    {{/each}}
+                    {{#if total}}
+                        {{#each itemsGroups}}
+                            {{> items-group this}}
+                        {{/each}}
+                    {{else}}
+                        <p><i>No hay preguntas...</i></p>
+                    {{/if}}
                 </div>
 
                 <div class="ch-loading ch-loading-small pagination-link-spinner"
