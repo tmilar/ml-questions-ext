@@ -9,6 +9,7 @@
     <!-- build:css css/main.css -->
     <link rel="stylesheet" href="css/meli.css">
     <link type="text/css" rel="stylesheet" href="lib/jquery-waitMe/waitMe.css">
+    <link type="text/css" rel="stylesheet" href="css/nanoscroller.css">
 
     <link href="css/main.css" rel="stylesheet">
     <!-- endbuild -->
@@ -17,11 +18,14 @@
 
     <div class="main container">
       <h1>MeliPreguntas</h1>
-      <p>Esta app esta buena o no?</p>
+      <h3><i>Todas tus preguntas desde un solo lugar!</i></h3>
 
-      <div class="questions content">
-        <!-- questions here... -->
+      <div id="about" class="nano">
+          <div class="questions content nano-content">
+              <!-- questions here... -->
+          </div>
       </div>
+
     </div>
 
     <!-- build:js src/popup-vendor.js -->
@@ -37,6 +41,7 @@
     <script type="text/javascript" src="lib/chrome-ex-oauth2/oauth2.js"></script>
     <script type="text/javascript" src="lib/tabs-helper.js"></script>
     <script type="text/javascript" src="lib/jquery-waitMe/waitMe.js"></script>
+    <script type="text/javascript" src="lib/jquery-nanoscroller/nanoscroller.min.js"></script>
     <script src="src/popup/popup.js"></script>
     <script src="src/popup/questions/hbs/hbsTemplates.js"></script>
     <script src="src/popup/questions/questions-module.js"></script>

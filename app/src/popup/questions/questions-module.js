@@ -118,6 +118,8 @@ var QuestionsModule = (function QuestionsModule() {
         console.log("Loading questions data.. ", questionsData);
 
         target.html(compiledHbs);
+
+        $(".nano").nanoScroller();
     }
 
     return {
