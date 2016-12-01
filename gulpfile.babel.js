@@ -5,6 +5,9 @@ import del from 'del';
 import runSequence from 'run-sequence';
 import {stream as wiredep} from 'wiredep';
 
+import path from 'path';
+import merge from 'merge-stream';
+
 const $ = gulpLoadPlugins();
 
 gulp.task('extras', () => {
@@ -105,7 +108,7 @@ gulp.task('size', () => {
 });
 
 gulp.task('wiredep', () => {
-  gulp.src('app/*.html')
+  gulp.src('app/**/*.html')
     .pipe(wiredep({
       ignorePath: /^(\.\.\/)*\.\./
     }))
@@ -119,10 +122,41 @@ gulp.task('package', function () {
       .pipe(gulp.dest('package'));
 });
 
+
+gulp.task('hbs', () => {
+    let partials = gulp.src(['app/src/**/hbs/partials/*.hbs'])
+        .pipe($.handlebars({
+            handlebars: require('handlebars')
+        }))
+        .pipe($.wrap('Handlebars.registerPartial(<%= processPartialName(file.relative) %>, Handlebars.template(<%= contents %>));', {}, {
+            imports: {
+                processPartialName: (fileName) => {
+                    // Strip the extension and the underscore
+                    // Escape the output with JSON.stringify
+                    return JSON.stringify(path.basename(fileName, '.js'));
+                }
+            }
+        }));
+
+    let templates = gulp.src('app/src/**/hbs/*.hbs')
+        .pipe($.handlebars({
+            handlebars: require('handlebars')
+        }))
+        .pipe($.wrap('Handlebars.template(<%= contents %>)'))
+        .pipe($.declare({
+            namespace: 'MeliPreguntasApp.templates',
+            noRedeclare: true, // Avoid duplicate declarations
+        }));
+
+    return merge(partials, templates)
+        .pipe($.concat('hbsTemplates.js'))
+        .pipe(gulp.dest('app/src/popup/questions/hbs'));
+});
+
 gulp.task('build', (cb) => {
   runSequence(
-    'lint', 'babel', 'chromeManifest',
-    ['html', 'images', 'extras'],
+      'lint', 'babel', 'chromeManifest',
+    ['hbs', 'html', 'images', 'extras'],
     'size', cb);
 });
 
