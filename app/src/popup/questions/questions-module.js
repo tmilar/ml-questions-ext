@@ -26,10 +26,37 @@ var QuestionsModule = (function QuestionsModule() {
         return itemsPromise.thenReturn(questionsData);
     }
 
+    function populateFromUsers(questionsData) {
+        if(!questionsData.total) return questionsData;
+
+        // for each q in data.questions
+        // q.from.user = findUserDataById(q.from.id)
+        var userPerQuestion =  _.uniq(_.map(questionsData.questions, 'from.id'));
+
+        var questionsByUserId = _.groupBy(questionsData.questions, 'from.id');
+
+        var usersPromise = Promise.map(userPerQuestion, function (user_id) {
+            var userGetUrl = "https://api.mercadolibre.com/users/" + user_id;
+            return Promise.resolve($.get(userGetUrl));
+        });
+
+        usersPromise.then(function (usersData) {
+            _.each(usersData, function (userData) {
+                var questionsForItem = questionsByUserId[userData.id];
+                _.each(questionsForItem, function (q) {
+                    q.from.user = userData;
+                })
+            });
+        });
+
+        return usersPromise.thenReturn(questionsData);
+    }
+
     function initialize() {
 
         return getMeliQuestions()
             .then(populateItems)
+            .then(populateFromUsers)
             .then(toItemsGroups)
             .then(render)
             .catch(function (err) {
@@ -64,12 +91,7 @@ var QuestionsModule = (function QuestionsModule() {
 
             var itemQuestions = {
                 item_id: itemId,
-                item: {
-                    id: itemId,
-                    name: "NAME_OF_ITEM",
-                    url: "URL_OF_ITEM",
-                    other_info: "OTHER_INFO"
-                },
+                item: questions && questions[0] ? questions[0].item : undefined,
                 questions: questions
             };
 
