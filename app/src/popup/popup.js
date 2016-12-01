@@ -53,29 +53,8 @@ function configureLogin() {
     window.oauth2.options.user_id = "user_id";
 }
 
-function getMeliQuestions() {
-    return Promise.resolve($.ajax({
-        type: 'GET',
-        url: 'https://api.mercadolibre.com/questions/search' + '?' + 'seller_id=' + window.oauth2.getAuth().user_id + '&access_token=' + window.oauth2.getAuth().token + '&status=' + 'UNANSWERED',
-        error: function error(e, a, c) {
-            console.error("Error when trying to get questions for user " + window.oauth2.getAuth().user_id + " : " + e.responseJSON.message, e);
-            throw e;
-        }
-    }));
-}
-
-function showQuestions(questionsData) {
-    questionsData = _.pick(questionsData, ['total', 'questions']);
-    questionsData.questions = _.groupBy(questionsData.questions, 'item_id');
-    // TODO get item info by questionData group key
-    console.log("questions received! ", questionsData);
-
-    QuestionsModule.initialize(questionsData);
-}
-
 function loginSuccess() {
-    return getMeliQuestions()
-        .then(showQuestions);
+    QuestionsModule.initialize();
 }
 
 function _checkAccessToken() {
