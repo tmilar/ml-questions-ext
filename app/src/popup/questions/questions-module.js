@@ -6,7 +6,7 @@ var QuestionsModule = (function QuestionsModule() {
 
         return getMeliQuestions()
             .then(populateItems)
-            .then(showQuestions);
+            .then(render);
     }
 
     function getMeliQuestions() {
@@ -20,56 +20,52 @@ var QuestionsModule = (function QuestionsModule() {
         }));
     }
 
-    function showQuestions(questionsData) {
-
-        // TODO get item info by questionData group key
-        console.log("questions received! ", questionsData);
-        load(questionsData);
-    }
-
     function populateItems(questionsData) {
-        var items = {};
+        var result = {
+            total: questionsData.total,
+            itemsGroups: []
+        };
 
-        questionsData = _.pick(questionsData, ['total', 'questions']);
-
-        questionsData.itemsGroups = [];
-
-        if (Number(questionsData.total) > 0) {
-            var questionsByItem = _.groupBy(questionsData.questions, 'item_id');
-
-            var firstItemsGroup = _.map(questionsByItem, function (questions, itemId) {
-
-                var itemQuestions = {
-                    item_id: itemId,
-                    item: {
-                        id: itemId,
-                        name: "NAME_OF_ITEM",
-                        url: "URL_OF_ITEM",
-                        other_info: "OTHER_INFO"
-                    },
-                    questions: questions
-                };
-
-                return itemQuestions;
-            });
-
-            questionsData.itemsGroups[0] = firstItemsGroup;
-
-            console.log("items groups ", questionsData);
+        if (!result.total) {
+            return Promise.resolve(result);
         }
 
-        // return Promise.map(questionsData, function (questionData) {
-        //     var itemsGroup = questionData.itemsGroups;
-        // });
+        var questionsByItem = _.groupBy(questionsData.questions, 'item_id');
 
-        return Promise.resolve(questionsData);
+        var firstItemsGroup = _.map(questionsByItem, function (questions, itemId) {
+
+            var itemQuestions = {
+                item_id: itemId,
+                item: {
+                    id: itemId,
+                    name: "NAME_OF_ITEM",
+                    url: "URL_OF_ITEM",
+                    other_info: "OTHER_INFO"
+                },
+                questions: questions
+            };
+
+            return itemQuestions;
+        });
+
+        result.itemsGroups[0] = firstItemsGroup;
+
+        console.log("items groups result:", result);
+
+        return Promise.resolve(result);
     }
 
-    function load(questionsData) {
-        var compiledHbs = MeliPreguntasApp.templates['questions-view'](questionsData);
+    function render(questionsData) {
+        var compiledHbs = MeliPreguntasApp.templates['questions-view'](questionsData, {
+            helpers: {
+                toJSON: function (object) {
+                    return JSON.stringify(object, undefined, 2);
+                }
+            }
+        });
         var target = $(".questions.content");
 
-        console.log("About to load questions data.. ", questionsData, target);
+        console.log("About to load questions data.. ", questionsData);
 
         target.html(compiledHbs);
     }
