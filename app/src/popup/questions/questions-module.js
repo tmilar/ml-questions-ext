@@ -32,11 +32,14 @@ var QuestionsModule = (function QuestionsModule() {
 
         questionsData = _.pick(questionsData, ['total', 'questions']);
 
-        if (Number(questionsData.total) > 0) {
-            questionsData.questions = _.groupBy(questionsData.questions, 'item_id');
+        questionsData.itemsGroups = [];
 
-            questionsData.itemsGroups = _.map(questionsData.questions, function (questions, itemId) {
-                return {
+        if (Number(questionsData.total) > 0) {
+            var questionsByItem = _.groupBy(questionsData.questions, 'item_id');
+
+            var firstItemsGroup = _.map(questionsByItem, function (questions, itemId) {
+
+                var itemQuestions = {
                     item_id: itemId,
                     item: {
                         id: itemId,
@@ -44,13 +47,14 @@ var QuestionsModule = (function QuestionsModule() {
                         url: "URL_OF_ITEM",
                         other_info: "OTHER_INFO"
                     },
-
-
                     questions: questions
                 };
 
-
+                return itemQuestions;
             });
+
+            questionsData.itemsGroups[0] = firstItemsGroup;
+
             console.log("items groups ", questionsData);
         }
 
