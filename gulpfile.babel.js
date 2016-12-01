@@ -81,14 +81,14 @@ gulp.task('chromeManifest', () => {
 gulp.task('babel', () => {
   return gulp.src('app/src/**/*.js')
       .pipe($.babel({
-        presets: ['es2015']
+        presets: ['es2015'], retainLines: true
       }))
       .pipe(gulp.dest('app/src'));
 });
 
 gulp.task('clean', del.bind(null, ['.tmp', 'dist']));
 
-gulp.task('watch', ['lint', 'babel'], () => {
+gulp.task('watch', ['lint'], () => {
   $.livereload.listen();
 
   gulp.watch([
@@ -99,7 +99,7 @@ gulp.task('watch', ['lint', 'babel'], () => {
     'app/_locales/**/*.json'
   ]).on('change', $.livereload.reload);
 
-  gulp.watch('app/src/**/*.js', ['lint', 'babel']);
+  gulp.watch('app/src/**/*.js', ['lint']);
   gulp.watch('bower.json', ['wiredep']);
 });
 
@@ -155,7 +155,7 @@ gulp.task('hbs', () => {
 
 gulp.task('build', (cb) => {
   runSequence(
-      'lint', 'babel', 'chromeManifest',
+      'lint', 'chromeManifest',
     ['hbs', 'html', 'images', 'extras'],
     'size', cb);
 });
