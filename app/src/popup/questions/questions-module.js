@@ -3,9 +3,9 @@
 var QuestionsModule = (function QuestionsModule() {
 
     function populateItems(questionsData) {
-        if(!questionsData.total) return questionsData;
+        if (!questionsData.total) return questionsData;
         // for each q in data.questions
-            // q.item = findItemById(q.item_id)
+        // q.item = findItemById(q.item_id)
         var itemsInQuestions = _.uniq(_.map(questionsData.questions, 'item_id'));
         var questionsByItemId = _.groupBy(questionsData.questions, 'item_id');
 
@@ -27,11 +27,11 @@ var QuestionsModule = (function QuestionsModule() {
     }
 
     function populateFromUsers(questionsData) {
-        if(!questionsData.total) return questionsData;
+        if (!questionsData.total) return questionsData;
 
         // for each q in data.questions
         // q.from.user = findUserDataById(q.from.id)
-        var userPerQuestion =  _.uniq(_.map(questionsData.questions, 'from.id'));
+        var userPerQuestion = _.uniq(_.map(questionsData.questions, 'from.id'));
 
         var questionsByUserId = _.groupBy(questionsData.questions, 'from.id');
 
