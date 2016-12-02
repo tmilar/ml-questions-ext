@@ -39,12 +39,13 @@ function startLogin() {
                 }
             });
         })
+        .then(function () {
+            waitMe.stop();
+        })
         .then(loginSuccess)
         .catch(function (err) {
             console.error("Login bad: " + err.stack);
-        })
-        .finally(function () {
-            waitMe.stop();
+            waitMe.setText("Login error. Please retry.");
         });
 }
 
