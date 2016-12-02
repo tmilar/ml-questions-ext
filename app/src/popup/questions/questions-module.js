@@ -70,6 +70,11 @@ var QuestionsModule = (function QuestionsModule() {
             });
     }
 
+    /*
+     * ==================
+     * ML API calls
+     * ==================
+     */
     function getMeliQuestions() {
         return $.ajax({
             type: 'GET',
@@ -78,6 +83,20 @@ var QuestionsModule = (function QuestionsModule() {
                 var errMsg = "Descr: GET questions for user " + window.oauth2.getAuth().user_id + ". Msg: " + e.responseJSON.message;
                 console.error(errMsg, e);
                 e.message = errMsg;
+            }
+        });
+    }
+
+    function postAnswer(text, question_id) {
+        return $.ajax({
+            type: 'POST',
+            data: JSON.stringify({question_id: question_id, text: text}),
+            url: 'https://api.mercadolibre.com/answers' + '?'
+            + 'access_token=' + window.oauth2.getAuth().token,
+            error: function error(e) {
+                var errMsg = "Descr: POST answer for user " + window.oauth2.getAuth().user_id + ", question: " + question_id + ". Status: " + e.status;
+                e.message = errMsg;
+                return e;
             }
         });
     }
@@ -140,6 +159,45 @@ var QuestionsModule = (function QuestionsModule() {
         _openQuestion($question);
     }
 
+    function _removeItem($item) {
+        $item.hide("drop", {direction: "right"}, 1000);
+    }
+
+    function _removeQuestion($question) {
+        $question.hide("slide", {
+            direction: "right",
+            /// todo check empty container...
+            complete: function removeContainer() {
+                var $questionsContainer = $question.closest(".questions-container");
+                if ($questionsContainer.children(":visible").length === 0) {
+                    var $item = $questionsContainer.closest("section.card");
+                    _removeItem($item);
+                }
+            },
+            duration: "slow"
+        });
+    }
+
+    function clickRespondButton(e) {
+        e.stopPropagation();
+        e.preventDefault();
+        var $question = $(this).closest(".question");
+        //TODO validate and display err
+        // validateAnswerNotEmpty($question);
+        // validateAnswerNoSpecialChars($question);
+
+        var text = $question.find('textarea').val();
+        var question_id = parseInt($question.attr('id'), 10);
+
+        postAnswer(text, question_id)
+            .then(_removeQuestion.bind(null, $question))
+            .catch(function (err) {
+                console.error("Error al enviar respuesta! " + err.message);
+                $question.effect("shake", {direction: "right", times: 2, distance: 8}, 450);
+                // showAnswerError();
+            })
+    }
+
     function render(questionsData) {
         var compiledHbs = MeliPreguntasApp.templates['questions-view'](questionsData, {
             helpers: {
@@ -153,9 +211,14 @@ var QuestionsModule = (function QuestionsModule() {
         console.log("Loading questions data.. ", questionsData);
 
         $target.html(compiledHbs);
+        /* View Events */
+        // Open/Close
         $target.find('input[data-js="open-all"]').on('change', toggleAllQuestions);
         $target.find('.question').on('click', clickOpenQuestion);
         $target.find('a[data-js="question-btn-cancel"]').on('click', clickCloseQuestion);
+
+        // Respond
+        $target.find('.question-replay__btn-submit').on('click', clickRespondButton);
 
         $(".nano").nanoScroller();
     }
