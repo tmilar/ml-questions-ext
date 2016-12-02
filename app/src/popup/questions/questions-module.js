@@ -227,6 +227,11 @@ var QuestionsModule = (function QuestionsModule() {
             })
     }
 
+    function hideErrorMessages(e) {
+        var $question = $(this).closest(".question");
+        $question.find(".ch-box-warn, .ch-box-error ").hide();
+    }
+
     function render(questionsData) {
         var compiledHbs = MeliPreguntasApp.templates['questions-view'](questionsData, {
             helpers: {
@@ -245,6 +250,9 @@ var QuestionsModule = (function QuestionsModule() {
         $target.find('input[data-js="open-all"]').on('change', toggleAllQuestions);
         $target.find('.question').on('click', clickOpenQuestion);
         $target.find('a[data-js="question-btn-cancel"]').on('click', clickCloseQuestion);
+
+        // Text box focus
+        $target.find('.question').find('textarea').on('focus', hideErrorMessages);
 
         // Respond
         $target.find('.question-replay__btn-submit').on('click', clickRespondButton);
