@@ -123,7 +123,13 @@ var QuestionsModule = (function QuestionsModule() {
     }
 
     function _openQuestion() {
-        $(this).parents().find('.question--closed').first().removeClass('question--closed').addClass('question--opened');
+        $(this).closest('.question--closed').removeClass('question--closed').addClass('question--opened');
+    }
+
+    function _closeQuestion(e) {
+        e.stopPropagation();
+        e.preventDefault();
+        $(this).closest('.question--opened').removeClass('question--opened').addClass('question--closed');
     }
 
     function render(questionsData) {
@@ -141,6 +147,7 @@ var QuestionsModule = (function QuestionsModule() {
         $target.html(compiledHbs);
         $target.find('input[data-js="open-all"]').on('change', _toggleAllQuestions);
         $target.find('.question').on('click', _openQuestion);
+        $target.find('a[data-js="question-btn-cancel"]').on('click', _closeQuestion);
 
         $(".nano").nanoScroller();
     }
