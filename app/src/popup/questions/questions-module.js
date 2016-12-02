@@ -190,6 +190,19 @@ var QuestionsModule = (function QuestionsModule() {
     }
 
 
+    function validateAnswerNoSpecialChars($question) {
+        var text = $question.find('textarea').val();
+
+        var xssValidator = new RegExp("(<|>)", "g");
+        var hasSpecialChars = xssValidator.test(text);
+        $question.find(".special-chars").toggle(hasSpecialChars);
+
+        if (hasSpecialChars) {
+            _animateAnswerError($question);
+            throw new Error("El texto de la respuesta no puede estar vacio!");
+        }
+    }
+
     function _animateAnswerError($question) {
         $question.effect("shake", {direction: "right", times: 2, distance: 8}, 450);
     }
@@ -199,8 +212,8 @@ var QuestionsModule = (function QuestionsModule() {
         e.preventDefault();
         var $question = $(this).closest(".question");
         //TODO validate and display err
-        // validateAnswerNoSpecialChars($question);
         validateAnswerNotEmpty($question);
+        validateAnswerNoSpecialChars($question);
 
         var text = $question.find('textarea').val();
         var question_id = parseInt($question.attr('id'), 10);
