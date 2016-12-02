@@ -1,6 +1,6 @@
 <div><!-- questions.answerForm.hbs -->
     <form class="question-replay" data-js="form-question-replay"
-          action="https://questions.mercadolibre.com.ar/#/preguntas/vendedor/4416752323"
+          action="https://questions.mercadolibre.com.ar/#/preguntas/vendedor/{{id}}"
           method="post">
 
         <textarea class="question-replay__textarea"
@@ -35,7 +35,7 @@
                class="question-replay__btn-cancel mobile-hidden u--no-visited"
                data-js="question-btn-cancel">Cancelar</a>
 
-            <a href="https://questions.mercadolibre.com.ar/#/preguntas/vendedor/4416752323/eliminar"
+            <a href="https://questions.mercadolibre.com.ar/#/preguntas/vendedor/{{id}}/eliminar"
                class="question-replay__btn-delete u--no-visited"
                data-js="delete-modal-trigger"><span
                     class="ch-icon-trash"></span>Eliminar pregunta</a>

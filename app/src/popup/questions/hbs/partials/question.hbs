@@ -1,10 +1,10 @@
 <article data-js="questions-answer-group"
          class="table-list__item question question--question {{#if blocked}}question--blocked{{/if}} question--closed"
-         id="4141557199">    <!-- questions.question.hbs -->
+         id="{{id}}">    <!-- questions.question.hbs -->
     <div data-js="questions-old"></div>
 
     <div class="action-block action-block--alt" data-js="question__link">
-        <!--data-href="#/preguntas/vendedor/4141557199"-->
+        <!--data-href="#/preguntas/vendedor/{{id}}"-->
         <div class="u--arrange-fit">
             <i class="question__icon ch-icon-comment"></i>
         </div>
@@ -51,9 +51,9 @@
 
     <div data-js="answer-form">
         {{#if from.email}}
-            {{> answer-form_classified from}}
+            {{> answer-form_classified this}}
         {{else}}
-            {{> answer-form}}
+            {{> answer-form this}}
         {{/if}}
     </div>
 
