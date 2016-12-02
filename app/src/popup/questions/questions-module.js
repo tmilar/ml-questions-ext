@@ -179,6 +179,16 @@ var QuestionsModule = (function QuestionsModule() {
         });
     }
 
+    function validateAnswerNotEmpty($question) {
+        var text = $question.find('textarea').val();
+        var emptyAnswer = !text || !text.length;
+        $question.find(".empty-field").toggle(emptyAnswer);
+        if (emptyAnswer) {
+            _animateAnswerError($question);
+            throw new Error("El texto de la respuesta no puede estar vacio!");
+        }
+    }
+
 
     function _animateAnswerError($question) {
         $question.effect("shake", {direction: "right", times: 2, distance: 8}, 450);
@@ -189,8 +199,8 @@ var QuestionsModule = (function QuestionsModule() {
         e.preventDefault();
         var $question = $(this).closest(".question");
         //TODO validate and display err
-        // validateAnswerNotEmpty($question);
         // validateAnswerNoSpecialChars($question);
+        validateAnswerNotEmpty($question);
 
         var text = $question.find('textarea').val();
         var question_id = parseInt($question.attr('id'), 10);
