@@ -221,6 +221,7 @@ var QuestionsModule = (function QuestionsModule() {
         postAnswer(text, question_id)
             .then(_removeQuestion.bind(null, $question))
             .catch(function (err) {
+                $question.find(".server-error").show();
                 _animateAnswerError($question);
                 console.error("Error al enviar respuesta! " + err.message);
             })
