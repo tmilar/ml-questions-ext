@@ -179,6 +179,11 @@ var QuestionsModule = (function QuestionsModule() {
         });
     }
 
+
+    function _animateAnswerError($question) {
+        $question.effect("shake", {direction: "right", times: 2, distance: 8}, 450);
+    }
+
     function clickRespondButton(e) {
         e.stopPropagation();
         e.preventDefault();
@@ -193,9 +198,8 @@ var QuestionsModule = (function QuestionsModule() {
         postAnswer(text, question_id)
             .then(_removeQuestion.bind(null, $question))
             .catch(function (err) {
+                _animateAnswerError($question);
                 console.error("Error al enviar respuesta! " + err.message);
-                $question.effect("shake", {direction: "right", times: 2, distance: 8}, 450);
-                // showAnswerError();
             })
     }
 
