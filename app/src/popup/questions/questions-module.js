@@ -140,17 +140,18 @@ var QuestionsModule = (function QuestionsModule() {
     }
 
     function _openQuestion($question) {
-        $question.removeClass('question--closed').addClass('question--opened');
+        $question.removeClass('question--closed', 200).addClass('question--opened');
     }
 
     function _closeQuestion($question) {
-        $question.removeClass('question--opened').addClass('question--closed');
+        $question.addClass('question--closed', 200).removeClass('question--opened');
     }
 
     function clickCloseQuestion(e) {
         e.stopPropagation();
         e.preventDefault();
         var $question = $(this).closest('.question--opened');
+
         _closeQuestion($question);
     }
 
