@@ -111,6 +111,21 @@ var QuestionsModule = (function QuestionsModule() {
         return Promise.resolve(result);
     }
 
+    function _toggleAllQuestions(event) {
+        var openClass = 'question--opened';
+        var closeClass = 'question--closed';
+        var $questions = $('[data-js="questions-answer-group"]');
+        if( event.target.checked ) {
+            $questions.removeClass(closeClass).addClass(openClass);
+        } else {
+            $questions.removeClass(openClass).addClass(closeClass);
+        }
+    }
+
+    function _openQuestion() {
+        $(this).parents().find('.question--closed').first().removeClass('question--closed').addClass('question--opened');
+    }
+
     function render(questionsData) {
         var compiledHbs = MeliPreguntasApp.templates['questions-view'](questionsData, {
             helpers: {
@@ -119,11 +134,13 @@ var QuestionsModule = (function QuestionsModule() {
                 }
             }
         });
-        var target = $(".questions.content");
+        var $target = $(".questions.content");
 
         console.log("Loading questions data.. ", questionsData);
 
-        target.html(compiledHbs);
+        $target.html(compiledHbs);
+        $target.find('input[data-js="open-all"]').on('change', _toggleAllQuestions);
+        $target.find('.question').on('click', _openQuestion);
 
         $(".nano").nanoScroller();
     }
