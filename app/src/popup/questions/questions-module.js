@@ -66,7 +66,7 @@ var QuestionsModule = (function QuestionsModule() {
                 waitMe.stop();
             })
             .catch(function (err) {
-                console.error("Error al intentar recuperar info de las preguntas: " + err.stack);
+                console.error("Error al intentar recuperar info de las preguntas: " + err.message);
             });
     }
 
@@ -75,8 +75,9 @@ var QuestionsModule = (function QuestionsModule() {
             type: 'GET',
             url: 'https://api.mercadolibre.com/questions/search' + '?' + 'seller_id=' + window.oauth2.getAuth().user_id + '&access_token=' + window.oauth2.getAuth().token + '&status=' + 'UNANSWERED',
             error: function error(e, a, c) {
-                console.error("Error when trying to get questions for user " + window.oauth2.getAuth().user_id + " : " + e.responseJSON.message, e);
-                throw e;
+                var errMsg = "Descr: GET questions for user " + window.oauth2.getAuth().user_id + ". Msg: " + e.responseJSON.message;
+                console.error(errMsg, e);
+                e.message = errMsg;
             }
         });
     }
