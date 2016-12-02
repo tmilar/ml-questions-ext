@@ -111,25 +111,32 @@ var QuestionsModule = (function QuestionsModule() {
         return Promise.resolve(result);
     }
 
-    function _toggleAllQuestions(event) {
-        var openClass = 'question--opened';
-        var closeClass = 'question--closed';
+    function toggleAllQuestions(event) {
         var $questions = $('[data-js="questions-answer-group"]');
-        if( event.target.checked ) {
-            $questions.removeClass(closeClass).addClass(openClass);
-        } else {
-            $questions.removeClass(openClass).addClass(closeClass);
-        }
+
+        $questions.each(function () {
+            event.target.checked ? _openQuestion($(this)) : _closeQuestion($(this));
+        });
     }
 
-    function _openQuestion() {
-        $(this).closest('.question--closed').removeClass('question--closed').addClass('question--opened');
+    function _openQuestion($question) {
+        $question.removeClass('question--closed').addClass('question--opened');
     }
 
-    function _closeQuestion(e) {
+    function _closeQuestion($question) {
+        $question.removeClass('question--opened').addClass('question--closed');
+    }
+
+    function clickCloseQuestion(e) {
         e.stopPropagation();
         e.preventDefault();
-        $(this).closest('.question--opened').removeClass('question--opened').addClass('question--closed');
+        var $question = $(this).closest('.question--opened');
+        _closeQuestion($question);
+    }
+
+    function clickOpenQuestion(e) {
+        var $question = $(this).closest('.question--closed');
+        _openQuestion($question);
     }
 
     function render(questionsData) {
@@ -145,9 +152,9 @@ var QuestionsModule = (function QuestionsModule() {
         console.log("Loading questions data.. ", questionsData);
 
         $target.html(compiledHbs);
-        $target.find('input[data-js="open-all"]').on('change', _toggleAllQuestions);
-        $target.find('.question').on('click', _openQuestion);
-        $target.find('a[data-js="question-btn-cancel"]').on('click', _closeQuestion);
+        $target.find('input[data-js="open-all"]').on('change', toggleAllQuestions);
+        $target.find('.question').on('click', clickOpenQuestion);
+        $target.find('a[data-js="question-btn-cancel"]').on('click', clickCloseQuestion);
 
         $(".nano").nanoScroller();
     }
