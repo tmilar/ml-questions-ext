@@ -31,13 +31,13 @@ function startLogin() {
         })
         .then(function () {
             // TODO handle user_id response data?
-            return Promise.resolve($.ajax({
+            return $.ajax({
                 type: 'GET',
                 url: 'https://api.mercadolibre.com/users/me?access_token=' + window.oauth2.getAuth().token,
                 success: function success(data) {
                     console.log("login success! ", data);
                 }
-            }));
+            });
         })
         .then(loginSuccess)
         .catch(function (err) {
@@ -63,7 +63,7 @@ function _checkAccessToken() {
     return userLoggedIn;
 }
 
-$(document).on("ready", function () {
+$(document).ready(function () {
     configureLogin();
 
     if (!_checkAccessToken()) {

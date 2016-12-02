@@ -112,7 +112,15 @@ gulp.task('size', () => {
 gulp.task('wiredep', () => {
   gulp.src('app/**/*.html')
     .pipe(wiredep({
-      ignorePath: /^(\.\.\/)*\.\./
+      ignorePath: /^(\.\.\/)*\.\./,
+      onMainNotFound: function(pkg) {
+        console.log("WARNING! main not found for bower package " + pkg + ". Consider setting manually.");
+      },
+      overrides: {
+        handlebars: {
+          main: "handlebars.runtime.js"
+        }
+      }
     }))
     .pipe(gulp.dest('app'));
 });

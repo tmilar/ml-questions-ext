@@ -71,14 +71,14 @@ var QuestionsModule = (function QuestionsModule() {
     }
 
     function getMeliQuestions() {
-        return Promise.resolve($.ajax({
+        return $.ajax({
             type: 'GET',
             url: 'https://api.mercadolibre.com/questions/search' + '?' + 'seller_id=' + window.oauth2.getAuth().user_id + '&access_token=' + window.oauth2.getAuth().token + '&status=' + 'UNANSWERED',
             error: function error(e, a, c) {
                 console.error("Error when trying to get questions for user " + window.oauth2.getAuth().user_id + " : " + e.responseJSON.message, e);
                 throw e;
             }
-        }));
+        });
     }
 
     function toItemsGroups(questionsData) {

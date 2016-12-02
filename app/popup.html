@@ -30,14 +30,15 @@
 
     <!-- build:js src/popup-vendor.js -->
     <!-- bower:js -->
-    <script src="bower_components/handlebars/handlebars.js"></script>
+    <script src="bower_components/handlebars/handlebars.runtime.js"></script>
+    <script src="bower_components/jquery/dist/jquery.js"></script>
+    <script src="bower_components/jquery-ui/jquery-ui.js"></script>
+    <script src="bower_components/lodash/lodash.js"></script>
+    <script src="bower_components/bluebird/js/browser/bluebird.js"></script>
     <!-- endbower -->
     <!-- endbuild -->
 
     <!-- build:js src/popup.js -->
-    <script type="text/javascript" src="lib/jquery-2.1.1.min.js"></script>
-    <script type="text/javascript" src="lib/lodash.js"></script>
-    <script type="text/javascript" src="lib/promise/bluebird.js"></script>
     <script type="text/javascript" src="lib/chrome-ex-oauth2/oauth2.js"></script>
     <script type="text/javascript" src="lib/tabs-helper.js"></script>
     <script type="text/javascript" src="lib/jquery-waitMe/waitMe.js"></script>
