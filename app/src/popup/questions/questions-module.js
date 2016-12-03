@@ -179,13 +179,41 @@ var QuestionsModule = (function QuestionsModule() {
         });
     }
 
+    function validateAnswerNotEmpty($question) {
+        var text = $question.find('textarea').val();
+        var emptyAnswer = !text || !text.length;
+        $question.find(".empty-field").toggle(emptyAnswer);
+        if (emptyAnswer) {
+            _animateAnswerError($question);
+            throw new Error("El texto de la respuesta no puede estar vacio!");
+        }
+    }
+
+
+    function validateAnswerNoSpecialChars($question) {
+        var text = $question.find('textarea').val();
+
+        var xssValidator = new RegExp("(<|>)", "g");
+        var hasSpecialChars = xssValidator.test(text);
+        $question.find(".special-chars").toggle(hasSpecialChars);
+
+        if (hasSpecialChars) {
+            _animateAnswerError($question);
+            throw new Error("El texto de la respuesta no puede estar vacio!");
+        }
+    }
+
+    function _animateAnswerError($question) {
+        $question.effect("shake", {direction: "right", times: 2, distance: 8}, 450);
+    }
+
     function clickRespondButton(e) {
         e.stopPropagation();
         e.preventDefault();
         var $question = $(this).closest(".question");
         //TODO validate and display err
-        // validateAnswerNotEmpty($question);
-        // validateAnswerNoSpecialChars($question);
+        validateAnswerNotEmpty($question);
+        validateAnswerNoSpecialChars($question);
 
         var text = $question.find('textarea').val();
         var question_id = parseInt($question.attr('id'), 10);
@@ -193,10 +221,15 @@ var QuestionsModule = (function QuestionsModule() {
         postAnswer(text, question_id)
             .then(_removeQuestion.bind(null, $question))
             .catch(function (err) {
+                $question.find(".server-error").show();
+                _animateAnswerError($question);
                 console.error("Error al enviar respuesta! " + err.message);
-                $question.effect("shake", {direction: "right", times: 2, distance: 8}, 450);
-                // showAnswerError();
             })
+    }
+
+    function hideErrorMessages(e) {
+        var $question = $(this).closest(".question");
+        $question.find(".ch-box-warn, .ch-box-error ").hide();
     }
 
     function render(questionsData) {
@@ -217,6 +250,9 @@ var QuestionsModule = (function QuestionsModule() {
         $target.find('input[data-js="open-all"]').on('change', toggleAllQuestions);
         $target.find('.question').on('click', clickOpenQuestion);
         $target.find('a[data-js="question-btn-cancel"]').on('click', clickCloseQuestion);
+
+        // Text box focus
+        $target.find('.question').find('textarea').on('focus', hideErrorMessages);
 
         // Respond
         $target.find('.question-replay__btn-submit').on('click', clickRespondButton);
