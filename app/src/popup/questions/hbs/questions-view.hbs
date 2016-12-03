@@ -14,11 +14,13 @@
                         Preguntas (<span class="questions-total" data-js="questions-total">{{total}}</span>)
                     </h1>
 
-                    <div class="open-all">
-                        <input type="checkbox" data-js="open-all" name="questions-open-checkbox"
-                               id="questions-open-checkbox" value="">
-                        <label for="questions-open-checkbox">Desplegar todas</label>
-                    </div>
+                    {{#if total}}
+                        <div class="open-all">
+                            <input type="checkbox" data-js="open-all" name="questions-open-checkbox"
+                                   id="questions-open-checkbox" value="">
+                            <label for="questions-open-checkbox">Desplegar todas</label>
+                        </div>
+                    {{/if}}
 
                 </header>
                 <!-- /questions.header -->
