@@ -16,19 +16,14 @@ var Auth = (function () {
 
         return new Promise(window.oauth2.start.bind(window.oauth2))
             .then(function () {
-                console.log("Login good!");
+                console.log("Login success!");
             })
             .then(function () {
-                // TODO handle user_id response data?
-                return $.ajax({
-                    type: 'GET',
-                    url: 'https://api.mercadolibre.com/users/me?access_token=' + window.oauth2.getAuth().token,
-                    success: function success(data) {
-                        console.log("login success! ", data);
-                    }
-                });
+                var userDataUrl = 'https://api.mercadolibre.com/users/me?access_token=' + window.oauth2.getAuth().token;
+                return $.get(userDataUrl);
             })
-            .then(function () {
+            .then(function (data) {
+                console.log("user info: ", data);
                 waitMe.stop();
             })
             .catch(function (err) {
