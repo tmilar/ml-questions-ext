@@ -216,6 +216,40 @@
             }
 
             return true;
+        },
+
+        addUser: function (userInfo) {
+            var users = localStorageData.get('users');
+            var newUserId = userInfo.id;
+
+            // initialize users hash if not existant
+            if(!users) {
+                users = {};
+            }
+
+            // check if user was already registered
+            if(users[newUserId]) {
+                console.log("User id: ", newUserId, " was already registered! Updating to new info: ", userInfo);
+            } else {
+                console.log("Registered new user: ", userInfo)
+            }
+
+            users[newUserId] = userInfo;
+            localStorageData.set('users', users);
+        },
+
+        removeUser: function (userId) {
+            var users = localStorageData.get('users');
+            if(!users[userId]) {
+                console.error("Error, user id ", userId, "not found! ");
+            }
+            var removed = delete users[userId];
+            localStorageData.set('users', users);
+            return removed;
+        },
+
+        getUsers: function () {
+            return localStorageData.get('users');
         }
     }
 })();
