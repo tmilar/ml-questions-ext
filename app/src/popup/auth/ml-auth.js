@@ -23,7 +23,8 @@ var Auth = (function () {
                 return $.get(userDataUrl);
             })
             .then(function (data) {
-                console.log("user info: ", data);
+                console.log("saving user info: ", data);
+                window.oauth2.addUser(data);
                 waitMe.stop();
             })
             .catch(function (err) {
