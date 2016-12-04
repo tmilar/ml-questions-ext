@@ -14,7 +14,8 @@
         '?client_id=162744410854883' +
         '&response_type=token' +
         '&scope=public_profile,email' +
-        '&redirect_uri=https://www.facebook.com/connect/login_success.html'
+        '&redirect_uri=https://www.facebook.com/connect/login_success.html',
+        forceNewLogin: false
     };
 
     function _removeLoginTab() {
@@ -130,6 +131,7 @@
                 chrome.windows.create({
                     url: url,
                     type: 'popup',
+                    incognito: options.forceNewLogin || currentWindow.incognito
                 }, function (window) {
                     self.loginTabId = window.tabs[0].id;
                     self.loginWindowId = window.id;

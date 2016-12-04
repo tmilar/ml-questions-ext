@@ -16,6 +16,9 @@ var Auth = (function () {
             return Promise.resolve(loggedUser);
         }
 
+        // if not defined user, start a new login
+        window.oauth2.options.forceNewLogin = !user;
+
         waitMe.start({selector: '.container', text: "iniciando sesion..."});
 
         var newUserLogin = {};
