@@ -23,13 +23,11 @@ var waitMe = {
 };
 
 
-
-function loginSuccess() {
-    QuestionsModule.initialize();
+function loginSuccess(user) {
+    QuestionsModule.initialize(user);
 }
 
 $(document).ready(function () {
+    Auth.on('login', loginSuccess);
     Auth.init();
-    Auth.startLogin()
-        .then(loginSuccess);
 });
