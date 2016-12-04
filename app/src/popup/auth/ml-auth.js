@@ -9,10 +9,11 @@ var Auth = (function () {
         return userLoggedIn;
     }
 
-    function startLogin() {
+    function startLogin(user) {
 
-        if (_checkAccessToken()) {
-            return Promise.resolve();
+        var loggedUser = _checkLogin(user);
+        if (loggedUser) {
+            return Promise.resolve(loggedUser);
         }
 
         waitMe.start({selector: '.container', text: "iniciando sesion..."});
