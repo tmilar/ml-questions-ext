@@ -18,18 +18,19 @@ var Auth = (function () {
 
         waitMe.start({selector: '.container', text: "iniciando sesion..."});
 
+        var newUserLogin = {};
         return new Promise(window.oauth2.start.bind(window.oauth2))
-            .then(function () {
+            .then(function (tokenData) {
                 console.log("Login success!");
-            })
-            .then(function () {
-                var userDataUrl = 'https://api.mercadolibre.com/users/me?access_token=' + window.oauth2.getAuth().token;
+                newUserLogin = tokenData;
+                var userDataUrl = 'https://api.mercadolibre.com/users/me?access_token=' + tokenData.token;
                 return $.get(userDataUrl);
             })
             .then(function (data) {
-                console.log("saving user info: ", data);
-                window.oauth2.addUser(data);
+                newUserLogin.user = data;
+                console.log("saving user info: ", newUserLogin);
                 waitMe.stop();
+                return newUserLogin;
             })
             .catch(function (err) {
                 console.error("Login bad: " + err.stack);
