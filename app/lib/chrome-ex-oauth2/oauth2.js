@@ -21,6 +21,29 @@
         chrome.tabs.remove(window.oauth2.loginTabId);
     }
 
+    var localStorageData = {
+        set: function(key, value) {
+            if (!key || !value) {return;}
+
+            if (typeof value === "object") {
+                value = JSON.stringify(value);
+            }
+            localStorage.setItem(key, value);
+        },
+        get: function(key) {
+            var value = localStorage.getItem(key);
+
+            if (!value) {return;}
+
+            // assume it is an object that has been stringified
+            if (value[0] === "{") {
+                value = JSON.parse(value);
+            }
+
+            return value;
+        }
+    };
+
     window.oauth2 = {
 
         options: options,
@@ -111,11 +134,16 @@
 
                 var expireDate = new Date(self.startRequestTime.getTime() + ( expireTime * 1000));
 
-                window.localStorage.setItem(this.options.key, accessToken);
-                window.localStorage.setItem(this.options.key_expire, expireDate);
+                var auth = {};
+                auth[this.options.key] = accessToken;
+                auth[this.options.key_expire] = expireDate;
+
                 if (userId && userId.length > 0 && this.options.user_id) {
-                    window.localStorage.setItem(this.options.user_id, userId);
+                    auth[this.options.user_id] = userId;
                 }
+
+                localStorageData.set(this.options.key, auth);
+
                 console.log("stored access token ", accessToken, " from url ", url);
                 _removeLoginTab();
                 return true;
@@ -168,26 +196,14 @@
          * @return Object containing token & user login info
          */
         getAuth: function () {
-
-            if (!window.localStorage.getItem(this.options.key))
-                return {};
-
-            return {
-                token: window.localStorage.getItem(this.options.key),
-                expires: window.localStorage.getItem(this.options.key_expire),
-                user_id: window.localStorage.getItem(this.options.user_id)
-            };
+            return localStorageData.get(this.options.key);
         },
 
         /**
          * Clears the authorization token from the local storage.
          */
         clearToken: function () {
-            delete window.localStorage.removeItem(this.options.key);
-            delete window.localStorage.removeItem(this.options.key_expire);
-            if (this.options.user_id) {
-                delete window.localStorage.removeItem(this.options.user_id);
-            }
+            window.localStorage.removeItem(this.options.key);
         },
 
         checkLogin: function () {
