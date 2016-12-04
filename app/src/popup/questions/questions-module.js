@@ -2,6 +2,8 @@
 
 var QuestionsModule = (function QuestionsModule() {
 
+    var self = {};
+
     function populateItems(questionsData) {
         if (!questionsData.total) return questionsData;
         // for each q in data.questions
@@ -52,10 +54,17 @@ var QuestionsModule = (function QuestionsModule() {
         return usersPromise.thenReturn(questionsData);
     }
 
-    function initialize() {
+    function initialize(loggedUser) {
 
+        if(!loggedUser || !loggedUser.user.id || !loggedUser.token) {
+            console.error("Can't initialize questions, login first. ", loggedUser);
+            return;
+        }
         var loadingMsgs = ["Deployando a la NASA", "Macerando las uvas", "Volcando el yogur", "Leyendo el Quijote"];
         waitMe.start({selector: ".questions", text: _.sample(loadingMsgs)});
+
+        self.userId = loggedUser.user.id;
+        self.token = loggedUser.token;
 
         return getMeliQuestions()
             .then(populateItems)
@@ -78,9 +87,9 @@ var QuestionsModule = (function QuestionsModule() {
     function getMeliQuestions() {
         return $.ajax({
             type: 'GET',
-            url: 'https://api.mercadolibre.com/questions/search' + '?' + 'seller_id=' + window.oauth2.getAuth().user_id + '&access_token=' + window.oauth2.getAuth().token + '&status=' + 'UNANSWERED',
+            url: 'https://api.mercadolibre.com/questions/search' + '?' + 'seller_id=' + self.userId + '&access_token=' + self.token + '&status=' + 'UNANSWERED',
             error: function error(e, a, c) {
-                var errMsg = "Descr: GET questions for user " + window.oauth2.getAuth().user_id + ". Msg: " + e.responseJSON.message;
+                var errMsg = "Descr: GET questions for user " + self.userId + ". Msg: " + e.responseJSON.message;
                 console.error(errMsg, e);
                 e.message = errMsg;
             }
@@ -92,9 +101,9 @@ var QuestionsModule = (function QuestionsModule() {
             type: 'POST',
             data: JSON.stringify({question_id: question_id, text: text}),
             url: 'https://api.mercadolibre.com/answers' + '?'
-            + 'access_token=' + window.oauth2.getAuth().token,
+            + 'access_token=' + self.token,
             error: function error(e) {
-                var errMsg = "Descr: POST answer for user " + window.oauth2.getAuth().user_id + ", question: " + question_id + ". Status: " + e.status;
+                var errMsg = "Descr: POST answer for user " + self.userId + ", question: " + question_id + ". Status: " + e.status;
                 e.message = errMsg;
                 return e;
             }
