@@ -22,18 +22,22 @@
     }
 
     var localStorageData = {
-        set: function(key, value) {
-            if (!key || !value) {return;}
+        set: function (key, value) {
+            if (!key) {
+                return;
+            }
 
             if (typeof value === "object") {
                 value = JSON.stringify(value);
             }
             localStorage.setItem(key, value);
         },
-        get: function(key) {
+        get: function (key) {
             var value = localStorage.getItem(key);
 
-            if (!value) {return;}
+            if (!value) {
+                return;
+            }
 
             // assume it is an object that has been stringified
             if (value[0] === "{") {
@@ -69,7 +73,7 @@
 
             var accessToken = url.match(/access_token=([\w\/\-]+)/)[1];
             var expireTime = Number(url.match(/expires_in=([\w\/\-]+)/)[1]);
-            var userId =  url.match(/user_id=([\w\/\-]+)/) ? url.match(/user_id=([\w\/\-]+)/)[1] : null;
+            var userId = url.match(/user_id=([\w\/\-]+)/) ? url.match(/user_id=([\w\/\-]+)/)[1] : null;
 
             var expireDate = new Date(startRequestTime.getTime() + ( expireTime * 1000));
 
@@ -149,7 +153,10 @@
 
             chrome.windows.getCurrent(function (currentWindow) {
 
-                chrome.windows.create({url: url, type: 'popup', incognito: currentWindow.incognito}, function (window) {
+                chrome.windows.create({
+                    url: url,
+                    type: 'popup',
+                }, function (window) {
                     self.loginTabId = window.tabs[0].id;
                     self.loginWindowId = window.id;
 
@@ -240,7 +247,7 @@
 
         removeUser: function (userId) {
             var users = localStorageData.get('users');
-            if(!users[userId]) {
+            if (!users[userId]) {
                 console.error("Error, user id ", userId, "not found! ");
             }
             var removed = delete users[userId];
