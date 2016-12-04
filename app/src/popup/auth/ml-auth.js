@@ -1,8 +1,11 @@
 var Auth = (function () {
 
-    function _checkAccessToken() {
-        var userLoggedIn = window.oauth2.checkLogin();
-        console.log("logged? ", userLoggedIn);
+    function _checkLogin(user) {
+        if(!user) {
+            return false;
+        }
+        var userLoggedIn = window.oauth2.checkToken(user);
+        console.log("logged? ", !!userLoggedIn, userLoggedIn);
         return userLoggedIn;
     }
 
