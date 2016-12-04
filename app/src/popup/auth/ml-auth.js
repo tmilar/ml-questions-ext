@@ -1,7 +1,7 @@
 var Auth = (function () {
 
     function _checkLogin(user) {
-        if(!user) {
+        if (!user) {
             return false;
         }
         var userLoggedIn = window.oauth2.checkToken(user);
@@ -19,8 +19,8 @@ var Auth = (function () {
             });
         }
 
-        // if not defined user, start a new login
-        window.oauth2.options.forceNewLogin = !user;
+        // force start a new login
+        window.oauth2.options.forceNewLogin = true;
 
         waitMe.start({selector: '.container', text: "iniciando sesion..."});
 
@@ -65,16 +65,20 @@ var Auth = (function () {
             }
 
             // check if user was already registered
-            var newUser = users[newUserId];
-            if (newUser) {
-                console.log("User id: ", newUserId, " was already registered! Current info: ", newUser, ". Updating with new info: ", userInfo);
-                _.merge(newUser, userInfo);
+            var existingUser = users[newUserId];
+            if (existingUser) {
+                console.log("User id: ", newUserId, " was already registered! Current info: ", existingUser, ". Updating with new info: ", userInfo);
+                _.merge(existingUser, userInfo);
             } else {
                 console.log("Registering new user: ", userInfo);
                 users[newUserId] = userInfo;
             }
 
             localStorage.set('users', users);
+        },
+
+        getUsers: function () {
+            return localStorage.get('users');
         }
     };
 
@@ -82,6 +86,11 @@ var Auth = (function () {
         var clientId = 3791482542047777;
         window.oauth2.options.full_url = "http://auth.mercadolibre.com.ar/authorization?response_type=token&client_id=" + clientId;
         window.oauth2.options.user_id = "user_id";
+
+        var self = this;
+        _.each(User.getUsers(), function (user) {
+            self.startLogin(user);
+        });
     }
 
     return {

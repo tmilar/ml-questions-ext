@@ -1,4 +1,7 @@
 body {
+}
+
+.main {
   padding: 10px 0 10px 10px;
 }
 /* Stop popup default scrolling */
