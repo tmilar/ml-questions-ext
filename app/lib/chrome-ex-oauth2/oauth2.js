@@ -137,11 +137,11 @@
          */
         start: function (successCb, errorCb) {
 
-            var url = this.options.full_url ||
-                this.options.authorization_url +
-                "?client_id=" + this.options.client_id +
-                "&redirect_uri=" + this.options.redirect_url +
-                "&scopes=" + this.options.scopes.join(",");
+            var url = options.full_url ||
+                options.authorization_url +
+                "?client_id=" + options.client_id +
+                "&redirect_uri=" + options.redirect_url +
+                "&scopes=" + options.scopes.join(",");
 
             var self = this;
 
@@ -193,14 +193,14 @@
          * @return Object containing token & user login info
          */
         getAuth: function () {
-            return localStorageData.get(this.options.key);
+            return localStorageData.get(options.key);
         },
 
         /**
          * Clears the authorization token from the local storage.
          */
         clearToken: function () {
-            window.localStorage.removeItem(this.options.key);
+            window.localStorage.removeItem(options.key);
         },
 
         checkLogin: function () {
