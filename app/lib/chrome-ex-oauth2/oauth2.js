@@ -170,15 +170,19 @@
                             var loginResult = _finish(changeInfo.url, startRequestTime);
                         } catch (e) {
                             _removeLoginTab();
-                            errorCb(e);
-                            return;
+                            if (errorCb instanceof Function) {
+                                errorCb(e);
+                                return;
+                            } else {
+                                throw e;
+                            }
                         }
 
                         if (loginResult) {
                             /// return to extension popup
                             // unregister listener
                             chrome.tabs.onUpdated.removeListener(checkAccessToken);
-                            return successCb();
+                            return successCb instanceof Function ? successCb() : "OK";
                         } else {
                             // not finished yet..
                         }
