@@ -44,6 +44,92 @@
         }
     };
 
+    /**
+     * Finishes the oauth2 process by exchanging the given authorization code for an
+     * authorization token. The authroiztion token is saved to the browsers local storage.
+     * If the redirect page does not return an authorization code or an error occures when
+     * exchanging the authorization code for an authorization token then the oauth2 process dies
+     * and the authorization tab is closed.
+     *
+     * @param url The url of the redirect page specified in the authorization request.
+     */
+    function _finish(url) {
+
+        console.log("[oauth2] finishin! url: ", url);
+        var self = this;
+
+        if (url.match(/\?error=(.+)/)) {
+            console.error("[oauth2] error after login attempt. Url: ", url);
+            throw new Error("Error after fb login attempt");
+        }
+
+        if (url.match(/access_token=([\w\/\-]+)/)) {
+            // access token
+            // below you get string like this: access_token=...&expires_in=...
+            var params = url.split('#')[1];
+
+            var accessToken = url.match(/access_token=([\w\/\-]+)/)[1];
+            var expireTime = Number(url.match(/expires_in=([\w\/\-]+)/)[1]);
+            var userId =  url.match(/user_id=([\w\/\-]+)/) ? url.match(/user_id=([\w\/\-]+)/)[1] : null;
+
+            var expireDate = new Date(self.startRequestTime.getTime() + ( expireTime * 1000));
+
+            var auth = {};
+            auth[this.options.key] = accessToken;
+            auth[this.options.key_expire] = expireDate;
+
+            if (userId && userId.length > 0 && this.options.user_id) {
+                auth[this.options.user_id] = userId;
+            }
+
+            localStorageData.set(this.options.key, auth);
+
+            console.log("stored access token ", accessToken, " from url ", url);
+            _removeLoginTab();
+            return true;
+        }
+
+        if (url.match(/\?code=([\w\/\-]+)/)) {
+            // github  access token
+            var code = url.match(/\?code=([\w\/\-]+)/)[1];
+
+            var that = this;
+            var data = new FormData();
+            data.append('client_id', this.options.client_id);
+            data.append('client_secret', this.options.client_secret);
+            data.append('code', code);
+
+            // Send request for authorization token.
+            var xhr = new XMLHttpRequest();
+            xhr.addEventListener('readystatechange', function (event) {
+                if (xhr.readyState !== 4) {
+                    return;
+                }
+
+                if (xhr.status == 200) {
+                    if (xhr.responseText.match(/error=/)) {
+                        _removeLoginTab();
+                    } else {
+                        var token = xhr.responseText.match(/access_token=([^&]*)/)[1];
+                        window.localStorage.setItem(that.options.key, token);
+                        _removeLoginTab();
+                    }
+                } else {
+                    _removeLoginTab();
+                }
+
+            });
+
+            xhr.open('POST', this.options.access_token_url, true);
+            xhr.send(data);
+
+            return true;
+        }
+
+        console.warn("[oauth2] finish url unhandled response ", url);
+        return false;
+    }
+
     window.oauth2 = {
 
         options: options,
@@ -101,93 +187,6 @@
                     });
                 });
             });
-        },
-
-
-        /**
-         * Finishes the oauth2 process by exchanging the given authorization code for an
-         * authorization token. The authroiztion token is saved to the browsers local storage.
-         * If the redirect page does not return an authorization code or an error occures when
-         * exchanging the authorization code for an authorization token then the oauth2 process dies
-         * and the authorization tab is closed.
-         *
-         * @param url The url of the redirect page specified in the authorization request.
-         */
-        _finish: function (url) {
-
-            console.log("[oauth2] finishin! url: ", url);
-            var self = this;
-
-            if (url.match(/\?error=(.+)/)) {
-                console.error("[oauth2] error after login attempt. Url: ", url);
-                throw new Error("Error after fb login attempt");
-            }
-
-            if (url.match(/access_token=([\w\/\-]+)/)) {
-                // access token
-                // below you get string like this: access_token=...&expires_in=...
-                var params = url.split('#')[1];
-
-                var accessToken = url.match(/access_token=([\w\/\-]+)/)[1];
-                var expireTime = Number(url.match(/expires_in=([\w\/\-]+)/)[1]);
-                var userId =  url.match(/user_id=([\w\/\-]+)/) ? url.match(/user_id=([\w\/\-]+)/)[1] : null;
-
-                var expireDate = new Date(self.startRequestTime.getTime() + ( expireTime * 1000));
-
-                var auth = {};
-                auth[this.options.key] = accessToken;
-                auth[this.options.key_expire] = expireDate;
-
-                if (userId && userId.length > 0 && this.options.user_id) {
-                    auth[this.options.user_id] = userId;
-                }
-
-                localStorageData.set(this.options.key, auth);
-
-                console.log("stored access token ", accessToken, " from url ", url);
-                _removeLoginTab();
-                return true;
-            }
-
-            if (url.match(/\?code=([\w\/\-]+)/)) {
-                // github  access token
-                var code = url.match(/\?code=([\w\/\-]+)/)[1];
-
-                var that = this;
-                var data = new FormData();
-                data.append('client_id', this.options.client_id);
-                data.append('client_secret', this.options.client_secret);
-                data.append('code', code);
-
-                // Send request for authorization token.
-                var xhr = new XMLHttpRequest();
-                xhr.addEventListener('readystatechange', function (event) {
-                    if (xhr.readyState !== 4) {
-                        return;
-                    }
-
-                    if (xhr.status == 200) {
-                        if (xhr.responseText.match(/error=/)) {
-                            _removeLoginTab();
-                        } else {
-                            var token = xhr.responseText.match(/access_token=([^&]*)/)[1];
-                            window.localStorage.setItem(that.options.key, token);
-                            _removeLoginTab();
-                        }
-                    } else {
-                        _removeLoginTab();
-                    }
-
-                });
-
-                xhr.open('POST', this.options.access_token_url, true);
-                xhr.send(data);
-
-                return true;
-            }
-
-            console.warn("[oauth2] finish url unhandled response ", url);
-            return false;
         },
 
         /**
