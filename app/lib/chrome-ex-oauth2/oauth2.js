@@ -197,42 +197,6 @@
             }
 
             return true;
-        },
-
-        addUser: function (userInfo) {
-            var users = localStorage.get('users');
-
-            var newUserId = userInfo.id;
-
-            // initialize users hash if not existant
-            if(!users) {
-                users = {};
-            }
-
-            // check if user was already registered
-            if(users[newUserId]) {
-                console.log("User id: ", newUserId, " was already registered! Updating to new info: ", userInfo);
-            } else {
-                users[newUserId] = userInfo;
-                console.log("Registered new user: ", userInfo)
-            }
-
-            localStorage.set('users', users);
-        },
-
-        removeUser: function (userId) {
-            var users = localStorage.get('users');
-            if (!users[userId]) {
-                console.error("Error, user id ", userId, "not found! ");
-                return false;
-            }
-            delete users[userId];
-            localStorage.set('users', users);
-            return true;
-        },
-
-        getUsers: function () {
-            return localStorage.get('users');
         }
     }
 })();
