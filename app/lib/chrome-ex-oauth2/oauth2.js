@@ -63,7 +63,7 @@
 
             console.log("stored access token ", accessToken, " from url ", url);
             _removeLoginTab();
-            return true;
+            return auth;
         }
 
         if (url.match(/\?code=([\w\/\-]+)/)) {
@@ -163,7 +163,7 @@
                             /// return to extension popup
                             // unregister listener
                             chrome.tabs.onUpdated.removeListener(checkAccessToken);
-                            return successCb instanceof Function ? successCb() : "OK";
+                            return successCb instanceof Function ? successCb(loginResult) : "OK";
                         } else {
                             // not finished yet..
                         }
