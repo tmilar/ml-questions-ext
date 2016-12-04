@@ -181,18 +181,10 @@
             return localStorage.get(options.key);
         },
 
-        /**
-         * Clears the authorization token from the local storage.
-         */
-        clearToken: function () {
-            localStorage.removeItem(options.key);
-        },
-
         checkLogin: function () {
             var tokenContainer = this.getAuth();
 
             if (!tokenContainer || !tokenContainer.token || new Date(tokenContainer.expires) < new Date()) {
-                this.clearToken();
                 return false;
             }
 
