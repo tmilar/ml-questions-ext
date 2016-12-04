@@ -7,8 +7,9 @@
         client_secret: "5b1210837e4f094d4983bb07fbb5601d558fdef7",
         redirect_url: "https://github.com/robots.txt",
         scopes: [],
-        key: "accessToken",
-        key_expire: "accessToken_expires",
+        key: "token",
+        user_id: "user_id",
+        key_expire: "expires",
         full_url: 'https://www.facebook.com/v2.8/dialog/oauth' +
         '?client_id=162744410854883' +
         '&response_type=token' +
@@ -100,13 +101,13 @@
             }
 
             if (url.match(/access_token=([\w\/\-]+)/)) {
-                // facebook access token
+                // access token
                 // below you get string like this: access_token=...&expires_in=...
                 var params = url.split('#')[1];
 
                 var accessToken = url.match(/access_token=([\w\/\-]+)/)[1];
                 var expireTime = Number(url.match(/expires_in=([\w\/\-]+)/)[1]);
-                var userId = url.match(/user_id=([\w\/\-]+)/)[1];
+                var userId =  url.match(/user_id=([\w\/\-]+)/) ? url.match(/user_id=([\w\/\-]+)/)[1] : null;
 
                 var expireDate = new Date(self.startRequestTime.getTime() + ( expireTime * 1000));
 
@@ -164,7 +165,7 @@
         /**
          * Retreives the authorization token from local storage.
          *
-         * @return {token, expires} token if it exists, empty {} if not.
+         * @return Object containing token & user login info
          */
         getAuth: function () {
 
