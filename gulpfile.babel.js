@@ -120,7 +120,8 @@ gulp.task('wiredep', () => {
         handlebars: {
           main: "handlebars.runtime.js"
         }
-      }
+      },
+      exclude: ["underscore.js"]
     }))
     .pipe(gulp.dest('app'));
 });

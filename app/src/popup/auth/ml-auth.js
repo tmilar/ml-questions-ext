@@ -11,9 +11,12 @@ var Auth = (function () {
 
     function startLogin(user) {
 
+        var self = this;
         var loggedUser = _checkLogin(user);
         if (loggedUser) {
-            return Promise.resolve(loggedUser);
+            return Promise.resolve(loggedUser).then(function (user) {
+                self.trigger('login', user);
+            });
         }
 
         // if not defined user, start a new login
@@ -34,6 +37,7 @@ var Auth = (function () {
                 console.log("saving user info: ", newUserLogin);
                 User.addUser(newUserLogin);
                 waitMe.stop();
+                self.trigger('login', newUserLogin);
                 return newUserLogin;
             })
             .catch(function (err) {
@@ -85,3 +89,4 @@ var Auth = (function () {
         init: init
     }
 })();
+_.extend(Auth, Backbone.Events);
