@@ -21,32 +21,6 @@
         chrome.tabs.remove(window.oauth2.loginTabId);
     }
 
-    var localStorageData = {
-        set: function (key, value) {
-            if (!key) {
-                return;
-            }
-
-            if (typeof value === "object") {
-                value = JSON.stringify(value);
-            }
-            localStorage.setItem(key, value);
-        },
-        get: function (key) {
-            var value = localStorage.getItem(key);
-
-            if (!value) {
-                return;
-            }
-
-            // assume it is an object that has been stringified
-            if (value[0] === "{") {
-                value = JSON.parse(value);
-            }
-
-            return value;
-        }
-    };
 
     /**
      * Finishes the oauth2 process by exchanging the given authorization code for an
@@ -85,7 +59,7 @@
                 auth[options.user_id] = userId;
             }
 
-            localStorageData.set(options.key, auth);
+            localStorage.set(options.key, auth);
 
             console.log("stored access token ", accessToken, " from url ", url);
             _removeLoginTab();
@@ -113,7 +87,7 @@
                         _removeLoginTab();
                     } else {
                         var token = xhr.responseText.match(/access_token=([^&]*)/)[1];
-                        window.localStorage.setItem(options.key, token);
+                        localStorage.setItem(options.key, token);
                         _removeLoginTab();
                     }
                 } else {
@@ -204,14 +178,14 @@
          * @return Object containing token & user login info
          */
         getAuth: function () {
-            return localStorageData.get(options.key);
+            return localStorage.get(options.key);
         },
 
         /**
          * Clears the authorization token from the local storage.
          */
         clearToken: function () {
-            window.localStorage.removeItem(options.key);
+            localStorage.removeItem(options.key);
         },
 
         checkLogin: function () {
@@ -226,7 +200,8 @@
         },
 
         addUser: function (userInfo) {
-            var users = localStorageData.get('users');
+            var users = localStorage.get('users');
+
             var newUserId = userInfo.id;
 
             // initialize users hash if not existant
@@ -238,25 +213,26 @@
             if(users[newUserId]) {
                 console.log("User id: ", newUserId, " was already registered! Updating to new info: ", userInfo);
             } else {
+                users[newUserId] = userInfo;
                 console.log("Registered new user: ", userInfo)
             }
 
-            users[newUserId] = userInfo;
-            localStorageData.set('users', users);
+            localStorage.set('users', users);
         },
 
         removeUser: function (userId) {
-            var users = localStorageData.get('users');
+            var users = localStorage.get('users');
             if (!users[userId]) {
                 console.error("Error, user id ", userId, "not found! ");
+                return false;
             }
-            var removed = delete users[userId];
-            localStorageData.set('users', users);
-            return removed;
+            delete users[userId];
+            localStorage.set('users', users);
+            return true;
         },
 
         getUsers: function () {
-            return localStorageData.get('users');
+            return localStorage.get('users');
         }
     }
 })();
