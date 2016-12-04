@@ -29,6 +29,7 @@ var Auth = (function () {
             .then(function (data) {
                 newUserLogin.user = data;
                 console.log("saving user info: ", newUserLogin);
+                User.addUser(newUserLogin);
                 waitMe.stop();
                 return newUserLogin;
             })
@@ -38,6 +39,37 @@ var Auth = (function () {
             });
     }
 
+    var User = {
+        addUser: function (userInfo) {
+            var users = localStorage.get('users');
+
+            var newUserId = userInfo.user_id;
+
+            // check if id key is present
+            if (!newUserId) {
+                console.error("No user_id received! Can't register!");
+                return;
+            }
+
+            // initialize users hash if not existant, and mark new user as primary
+            if (_.isEmpty(users)) {
+                userInfo.primary = true;
+                users = {};
+            }
+
+            // check if user was already registered
+            var newUser = users[newUserId];
+            if (newUser) {
+                console.log("User id: ", newUserId, " was already registered! Current info: ", newUser, ". Updating with new info: ", userInfo);
+                _.merge(newUser, userInfo);
+            } else {
+                console.log("Registering new user: ", userInfo);
+                users[newUserId] = userInfo;
+            }
+
+            localStorage.set('users', users);
+        }
+    };
 
     function init() {
         var clientId = 3791482542047777;
