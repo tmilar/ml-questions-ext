@@ -181,14 +181,14 @@
             return localStorage.get(options.key);
         },
 
-        checkLogin: function () {
-            var tokenContainer = this.getAuth();
+        checkToken: function (auth) {
+            var tokenContainer = auth || this.getAuth();
 
             if (!tokenContainer || !tokenContainer.token || new Date(tokenContainer.expires) < new Date()) {
                 return false;
             }
 
-            return true;
+            return tokenContainer;
         }
     }
 })();
