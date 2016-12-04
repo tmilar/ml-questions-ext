@@ -30,4 +30,8 @@ function loginSuccess(user) {
 $(document).ready(function () {
     Auth.on('login', loginSuccess);
     Auth.init();
+
+    $(".add-account").on('click', function () {
+        Auth.startLogin();
+    });
 });
