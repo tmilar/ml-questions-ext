@@ -53,10 +53,9 @@
      *
      * @param url The url of the redirect page specified in the authorization request.
      */
-    function _finish(url) {
+    function _finish(url, startRequestTime) {
 
         console.log("[oauth2] finishin! url: ", url);
-        var self = this;
 
         if (url.match(/\?error=(.+)/)) {
             console.error("[oauth2] error after login attempt. Url: ", url);
@@ -72,17 +71,17 @@
             var expireTime = Number(url.match(/expires_in=([\w\/\-]+)/)[1]);
             var userId =  url.match(/user_id=([\w\/\-]+)/) ? url.match(/user_id=([\w\/\-]+)/)[1] : null;
 
-            var expireDate = new Date(self.startRequestTime.getTime() + ( expireTime * 1000));
+            var expireDate = new Date(startRequestTime.getTime() + ( expireTime * 1000));
 
             var auth = {};
-            auth[this.options.key] = accessToken;
-            auth[this.options.key_expire] = expireDate;
+            auth[options.key] = accessToken;
+            auth[options.key_expire] = expireDate;
 
-            if (userId && userId.length > 0 && this.options.user_id) {
-                auth[this.options.user_id] = userId;
+            if (userId && userId.length > 0 && options.user_id) {
+                auth[options.user_id] = userId;
             }
 
-            localStorageData.set(this.options.key, auth);
+            localStorageData.set(options.key, auth);
 
             console.log("stored access token ", accessToken, " from url ", url);
             _removeLoginTab();
@@ -93,10 +92,9 @@
             // github  access token
             var code = url.match(/\?code=([\w\/\-]+)/)[1];
 
-            var that = this;
             var data = new FormData();
-            data.append('client_id', this.options.client_id);
-            data.append('client_secret', this.options.client_secret);
+            data.append('client_id', options.client_id);
+            data.append('client_secret', options.client_secret);
             data.append('code', code);
 
             // Send request for authorization token.
@@ -111,7 +109,7 @@
                         _removeLoginTab();
                     } else {
                         var token = xhr.responseText.match(/access_token=([^&]*)/)[1];
-                        window.localStorage.setItem(that.options.key, token);
+                        window.localStorage.setItem(options.key, token);
                         _removeLoginTab();
                     }
                 } else {
@@ -120,7 +118,7 @@
 
             });
 
-            xhr.open('POST', this.options.access_token_url, true);
+            xhr.open('POST', options.access_token_url, true);
             xhr.send(data);
 
             return true;
@@ -147,7 +145,7 @@
 
             var self = this;
 
-            self.startRequestTime = new Date();
+            var startRequestTime = new Date();
 
             chrome.windows.getCurrent(function (currentWindow) {
 
@@ -169,7 +167,7 @@
                         //console.log("FINISH by new tab change... " + JSON.stringify(changeInfo));
 
                         try {
-                            var loginResult = self._finish(changeInfo.url);
+                            var loginResult = _finish(changeInfo.url, startRequestTime);
                         } catch (e) {
                             _removeLoginTab();
                             errorCb(e);
