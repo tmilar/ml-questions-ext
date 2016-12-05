@@ -210,7 +210,7 @@ LoginAbortException.prototype = new Error;
                                     };
 
                                     chrome.tabs.executeScript(self.loginTabId, {
-                                        code: "(" + setLoginUsername.toString()  + ")('" + userToLogin + "')",
+                                        code: "(" + lockLoginUsername.toString()  + ")('" + userToLogin + "')",
                                         runAt: "document_end"
                                     });
                                 }
