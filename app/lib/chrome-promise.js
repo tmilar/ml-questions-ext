@@ -45,76 +45,80 @@ function openTab(url) {
     });
 }
 
-/*
- * options.domainFilter = /^(?!(\.oldsite)|(developers)|(domain)|(content)).*\/
- */
-function getCookies(options) {
-    options = _.defaults(options, {
-        domainFilter: /^(?!(\.oldsite)|(developers)|(domain)|(content)).*/
-    });
-    return new Promise(function (resolve, reject) {
-        chrome.cookies.getAll({}, function (cookies) {
-            if (chrome.runtime.lastError) {
-                reject(new Error(chrome.runtime.lastError.message));
-            }
-            if (!cookies) {
-                reject(new Error("No cookies obtained..."))
-            }
 
-            var result = cookies;
-            if (options.domainFilter) {
-                result = _.filter(result, function (c) {
-                    return options.domainFilter.test(c.domain);
-                });
-            }
-            console.debug("Obtained", cookies.length, "cookies: \n", result);
-            resolve(result);
+var CookiePromise = (function CookiePromise() {
+
+    /*
+     * options.domainFilter = /^(?!(\.oldsite)|(developers)|(domain)|(content)).*\/
+     */
+    function getCookies(options) {
+        options = _.defaults(options, {
+            domainFilter: /^(?!(\.oldsite)|(developers)|(domain)|(content)).*/
+        });
+        return new Promise(function (resolve, reject) {
+            chrome.cookies.getAll({}, function (cookies) {
+                if (chrome.runtime.lastError) {
+                    reject(new Error(chrome.runtime.lastError.message));
+                }
+                if (!cookies) {
+                    reject(new Error("No cookies obtained..."))
+                }
+
+                var result = cookies;
+                if (options.domainFilter) {
+                    result = _.filter(result, function (c) {
+                        return options.domainFilter.test(c.domain);
+                    });
+                }
+                console.debug("Obtained", cookies.length, "cookies: \n", result);
+                resolve(result);
+            })
+        });
+    }
+
+    function _cookieDomainToUrl(cookie) {
+        var domain = cookie.domain.replace(/\.www/, "www");
+        var www = (domain.indexOf("www") >= 0) ? "" : "www";
+        return "http" + (cookie.secure ? "s" : "") + "://" + www + domain + cookie.path;
+    }
+
+    function removeCookie(cookie) {
+        return new Promise(function (resolve, reject) {
+            var removeDetails = {"url": _cookieDomainToUrl(cookie), "name": cookie.name};
+
+            chrome.cookies.remove(removeDetails, function (removed) {
+                if (chrome.runtime.lastError) {
+                    var e = new Error(chrome.runtime.lastError.message);
+                    reject(e);
+                }
+
+                console.debug("Removed " + removed + " cookie!");
+                resolve(removed);
+            });
+        });
+    }
+
+    function restoreCookie(cookie) {
+        return new Promise(function (resolve, reject) {
+            var restoredValues = _.pick(cookie, ["url", "name", "value", "domain", "path", "secure", "httpOnly", "sameSite", "expirationDate", "storeId"]);
+            restoredValues.url = _cookieDomainToUrl(cookie);
+
+            console.debug("Restore cookie: ", restoredValues, " from original: ", cookie);
+
+            chrome.cookies.set(restoredValues, function (r) {
+                if (chrome.runtime.lastError) {
+                    var e = new Error("cookie restored bad: " + chrome.runtime.lastError.message);
+                    reject(e);
+                }
+                console.debug("Restored cookie:", restoredValues, "; result:", r, "-- original was: ", cookie);
+                resolve(r);
+            });
         })
-    });
-}
+    }
 
-function _cookieDomainToUrl(cookie) {
-    var domain = cookie.domain.replace(/\.www/, "www");
-    var www = (domain.indexOf("www") >= 0) ? "" : "www";
-    return "http" + (cookie.secure ? "s" : "") + "://" + www + domain + cookie.path;
-}
-
-function removeCookie(cookie) {
-    return new Promise(function (resolve, reject) {
-        var removeDetails = {"url": _cookieDomainToUrl(cookie), "name": cookie.name};
-
-        chrome.cookies.remove(removeDetails, function (removed) {
-            if (chrome.runtime.lastError) {
-                var e = new Error(chrome.runtime.lastError.message);
-                reject(e);
-            }
-
-            console.debug("Removed " + removed + " cookie!");
-            resolve(removed);
-        });
-    });
-}
-
-function restoreCookie(cookie) {
-    return new Promise(function (resolve, reject) {
-        var restoredValues = _.pick(cookie, ["url", "name", "value", "domain", "path", "secure", "httpOnly", "sameSite", "expirationDate", "storeId"]);
-        restoredValues.url = _cookieDomainToUrl(cookie);
-
-        console.debug("Restore cookie: ", restoredValues, " from original: ", cookie);
-
-        chrome.cookies.set(restoredValues, function (r) {
-            if (chrome.runtime.lastError) {
-                var e = new Error("cookie restored bad: " + chrome.runtime.lastError.message);
-                reject(e);
-            }
-            console.debug("Restored cookie:", restoredValues, "; result:", r, "-- original was: ", cookie);
-            resolve(r);
-        });
-    })
-}
-
-var CookiePromise = {
-    get: getCookies,
-    remove: removeCookie,
-    restore: restoreCookie
-};
+    return {
+        get: getCookies,
+        remove: removeCookie,
+        restore: restoreCookie
+    }
+})();
