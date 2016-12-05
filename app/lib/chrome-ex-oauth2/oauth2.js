@@ -1,3 +1,11 @@
+function LoginAbortException(username) {
+    this.name = 'LoginAbort';
+    this.username = username;
+    this.message = 'Error, login ' + ( username ? 'for user ' + username + ' aborted!' : '' );
+    this.stack = (new Error()).stack;
+}
+LoginAbortException.prototype = new Error;
+
 (function () {
 
     var options = {
@@ -39,7 +47,7 @@
 
         if (url.match(/\?error=(.+)/)) {
             console.error("[oauth2] error after login attempt. Url: ", url);
-            throw new Error("Error after fb login attempt");
+            throw new Error("Error after login attempt");
         }
 
         if (url.match(/access_token=([\w\/\-]+)/)) {
@@ -141,6 +149,8 @@
                 "&scopes=" + options.scopes.join(",");
 
             var self = this;
+            var userToLogin = options.userToLogin;
+            delete options.userToLogin;
 
             var startRequestTime = new Date();
 
@@ -188,6 +198,13 @@
                                     if(windowId === window.id) {
                                         _restoreCookies(sessionCookies);
                                         chrome.windows.onRemoved.removeListener(onRemovedPopup);
+
+                                        var e = new LoginAbortException(userToLogin);
+                                        if (errorCb instanceof Function) {
+                                            errorCb(e);
+                                        } else {
+                                            throw e;
+                                        }
                                     }
                                 });
 
@@ -208,7 +225,6 @@
                                         _removeLoginTab();
                                         if (errorCb instanceof Function) {
                                             errorCb(e);
-                                            return;
                                         } else {
                                             throw e;
                                         }
