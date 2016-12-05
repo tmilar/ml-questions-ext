@@ -45,6 +45,7 @@
     -moz-border-radius: 5px;
     -webkit-border-radius: 5px;
     border-radius: 5px;
+    z-index: 10
 }
 
 .nano > .nano-pane > .nano-slider {

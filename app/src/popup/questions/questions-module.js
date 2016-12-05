@@ -242,6 +242,25 @@ var QuestionsModule = (function QuestionsModule() {
         $question.find(".ch-box-warn, .ch-box-error ").hide();
     }
 
+    function clickRemoveAccount(e) {
+        var $userHeader = $(e.target).closest('div[data-js="user-header"]');
+        var userId = $userHeader.attr("id");
+        var userName = $userHeader.find(".username").text();
+        var removeConfirm = confirm("Estas seguro que deseas remover la cuenta " + userName + "?");
+        if(removeConfirm) {
+            console.log("Eliminado el user ", userName, " (id: ", userId, ")");
+            Auth.removeUser(userId);
+            $userHeader.closest("main").hide("explode", _updateScroller);
+        }
+    }
+
+    function _updateScroller() {
+        $(".nano").nanoScroller({
+            // this is needed due to some bug that triggers infinite resets...
+            disableResize: true
+        });
+    }
+
     function render(questionsData) {
         var compiledHbs = MeliPreguntasApp.templates['questions-view'](questionsData, {
             helpers: {
@@ -269,11 +288,11 @@ var QuestionsModule = (function QuestionsModule() {
         // Respond
         $userSection.find('.question-replay__btn-submit').on('click', clickRespondButton);
 
+        // Remove account
+        $userSection.find('.account__btn-delete').on('click', clickRemoveAccount);
+
         // Update scroller
-        $(".nano").nanoScroller({
-            // this is needed due to some bug that triggers infinite resets...
-            disableResize: true
-        });
+        _updateScroller();
     }
 
     return {
