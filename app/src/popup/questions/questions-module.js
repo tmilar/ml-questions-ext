@@ -60,6 +60,14 @@ var QuestionsModule = (function QuestionsModule() {
             console.error("Can't initialize questions, login first. ", loggedUser);
             return;
         }
+
+        var alreadyLoggedUsers = $(".username").text();
+
+        if (alreadyLoggedUsers.indexOf(loggedUser.user.nickname) > -1) {
+            console.error("User " + loggedUser.user.nickname + " was already logged in! No new questions added." );
+            return;
+        }
+
         var loadingMsgs = ["Deployando a la NASA", "Macerando las uvas", "Volcando el yogur", "Leyendo el Quijote"];
         waitMe.start({selector: ".questions", text: _.sample(loadingMsgs)});
 
