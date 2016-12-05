@@ -56,7 +56,7 @@ var QuestionsModule = (function QuestionsModule() {
 
     function initialize(loggedUser) {
 
-        if(!loggedUser || !loggedUser.user.id || !loggedUser.token) {
+        if (!loggedUser || !loggedUser.user.id || !loggedUser.token) {
             console.error("Can't initialize questions, login first. ", loggedUser);
             return;
         }
@@ -256,7 +256,7 @@ var QuestionsModule = (function QuestionsModule() {
 
         $target.append(compiledHbs);
 
-        var $userSection = $("#"+self.user.id).parent();
+        var $userSection = $("#" + self.user.id).parent();
         /* View Events */
         // Open/Close
         $userSection.find('input[data-js="open-all"]').on('change', toggleAllQuestions);
@@ -269,7 +269,11 @@ var QuestionsModule = (function QuestionsModule() {
         // Respond
         $userSection.find('.question-replay__btn-submit').on('click', clickRespondButton);
 
-        $(".nano").nanoScroller();
+        // Update scroller
+        $(".nano").nanoScroller({
+            // this is needed due to some bug that triggers infinite resets...
+            disableResize: true
+        });
     }
 
     return {
