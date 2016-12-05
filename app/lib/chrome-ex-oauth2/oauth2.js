@@ -119,8 +119,10 @@ LoginAbortException.prototype = new Error;
     function _restoreCookies(cookies) {
         _.each(cookies, function (c) {
             var restored = _.pick(c, ["url", "name", "value", "domain", "path", "secure", "httpOnly", "sameSite", "expirationDate", "storeId"]);
-            var www = (c.domain.indexOf("www") >= 0) ? "" : "www";
-            restored.url = "http" + (c.secure ? "s" : "") + "://" + www + c.domain + c.path;
+            var domain = c.domain.replace(/\.www/, "www");
+            var www = (domain.indexOf("www") >= 0) ? "" : "www";
+            var restoredUrl = "http" + (c.secure ? "s" : "") + "://" + www + domain + c.path;
+            restored.url = restoredUrl;
 
             console.log("Restoring cookie: ", restored, " from: ", c);
             chrome.cookies.set(restored, function(r) {
@@ -170,7 +172,9 @@ LoginAbortException.prototype = new Error;
                     var cookiesToRemove = sessionCookies.length;
                     var removedCount = 0;
                     _.each(sessionCookies, function (cookie) {
-                        var cookieUrl = "http" + (cookie.secure ? "s" : "") + "://www" + cookie.domain + cookie.path;
+                        var domain = cookie.domain.replace(/\.www/, "www");
+                        var www = (domain.indexOf("www") >= 0) ? "" : "www";
+                        var cookieUrl = "http" + (cookie.secure ? "s" : "") + "://" + www + domain + cookie.path;
 
                         chrome.cookies.remove({"url": cookieUrl, "name": cookie.name}, function (removed) {
                             if (chrome.runtime.lastError) {
