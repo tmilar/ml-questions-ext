@@ -31,6 +31,7 @@
      * and the authorization tab is closed.
      *
      * @param url The url of the redirect page specified in the authorization request.
+     * @param startRequestTime Time at which the req started, to calculate expire date
      */
     function _finish(url, startRequestTime) {
 
@@ -107,6 +108,23 @@
         return false;
     }
 
+    function _restoreCookies(cookies) {
+        _.each(cookies, function (c) {
+            var restored = _.pick(c, ["url", "name", "value", "domain", "path", "secure", "httpOnly", "sameSite", "expirationDate", "storeId"]);
+            var www = (c.domain.indexOf("www") >= 0) ? "" : "www";
+            restored.url = "http" + (c.secure ? "s" : "") + "://" + www + c.domain + c.path;
+
+            console.log("Restoring cookie: ", restored, " from: ", c);
+            chrome.cookies.set(restored, function(r) {
+                if (chrome.runtime.lastError) {
+                    var e = new Error(chrome.runtime.lastError.message);
+                    console.log("cookie restored bad: ", r);
+                    console.error(e);
+                }
+            });
+        })
+    }
+
     window.oauth2 = {
 
         options: options,
@@ -127,49 +145,84 @@
             var startRequestTime = new Date();
 
             chrome.windows.getCurrent(function (currentWindow) {
+                /// Clear cookies for a new login....
+                // 1 cs = get cookies
+                // 2 process login
+                // 3 restore cookies
+                chrome.cookies.getAll({}, function (cookies) {
 
-                chrome.windows.create({
-                    url: url,
-                    type: 'popup',
-                    incognito: options.forceNewLogin || currentWindow.incognito
-                }, function (window) {
-                    self.loginTabId = window.tabs[0].id;
-                    self.loginWindowId = window.id;
-
-                    //console.log("new window opened! id: " + window.id + "tabid: " + self.loginTabId);
-
-                    chrome.tabs.onUpdated.addListener(function checkAccessToken(tabId, changeInfo, tab) {
-                        if (tabId !== self.loginTabId) {
-                            return;
-                        }
-
-                        // check for access token availability
-                        if (!(changeInfo.url)) {
-                            return;
-                        }
-                        //console.log("FINISH by new tab change... " + JSON.stringify(changeInfo));
-
-                        try {
-                            var loginResult = _finish(changeInfo.url, startRequestTime);
-                        } catch (e) {
-                            _removeLoginTab();
-                            if (errorCb instanceof Function) {
-                                errorCb(e);
-                                return;
-                            } else {
-                                throw e;
-                            }
-                        }
-
-                        if (loginResult) {
-                            /// return to extension popup
-                            // unregister listener
-                            chrome.tabs.onUpdated.removeListener(checkAccessToken);
-                            return successCb instanceof Function ? successCb(loginResult) : "OK";
-                        } else {
-                            // not finished yet..
-                        }
+                    var sessionCookies = self.sessionCookies = _.filter(cookies, function (c) {
+                        return /^(?!(\.oldsite)|(developers)|(domain)|(content)).*/.test(c.domain);
                     });
+
+                    console.log("las de session: \n", sessionCookies);
+
+                    var cookiesToRemove = sessionCookies.length;
+                    var removedCount = 0;
+                    _.each(sessionCookies, function (cookie) {
+                        var cookieUrl = "http" + (cookie.secure ? "s" : "") + "://www" + cookie.domain + cookie.path;
+
+                        chrome.cookies.remove({"url": cookieUrl, "name": cookie.name}, function (removed) {
+                            if (chrome.runtime.lastError) {
+                                var e = new Error(chrome.runtime.lastError.message);
+                                console.error(e);
+                            }
+                            removedCount++;
+                            if (removedCount !== cookiesToRemove) {
+                                return;
+                            }
+                            console.log("Removed ", removedCount, " cookies! continuing new login. (total was", cookiesToRemove, ").");
+
+                            chrome.windows.create({
+                                url: url,
+                                type: 'popup',
+                                incognito: currentWindow.incognito
+                            }, function (window) {
+                                self.loginTabId = window.tabs[0].id;
+                                self.loginWindowId = window.id;
+
+                                chrome.windows.onRemoved.addListener(function onRemovedPopup(windowId) {
+                                    if(windowId === window.id) {
+                                        _restoreCookies(sessionCookies);
+                                        chrome.windows.onRemoved.removeListener(onRemovedPopup);
+                                    }
+                                });
+
+                                chrome.tabs.onUpdated.addListener(function checkAccessToken(tabId, changeInfo, tab) {
+                                    if (tabId !== self.loginTabId) {
+                                        return;
+                                    }
+
+                                    // check for access token availability
+                                    if (!(changeInfo.url)) {
+                                        return;
+                                    }
+                                    //console.log("FINISH by new tab change... " + JSON.stringify(changeInfo));
+
+                                    try {
+                                        var loginResult = _finish(changeInfo.url, startRequestTime);
+                                    } catch (e) {
+                                        _removeLoginTab();
+                                        if (errorCb instanceof Function) {
+                                            errorCb(e);
+                                            return;
+                                        } else {
+                                            throw e;
+                                        }
+                                    }
+
+                                    if (loginResult) {
+                                        /// return to extension popup
+                                        // unregister listener
+                                        chrome.tabs.onUpdated.removeListener(checkAccessToken);
+                                        return successCb instanceof Function ? successCb(loginResult) : "OK";
+                                    } else {
+                                        // not finished yet..
+                                    }
+                                });
+                            });
+                        })
+                    })
                 });
             });
         },
