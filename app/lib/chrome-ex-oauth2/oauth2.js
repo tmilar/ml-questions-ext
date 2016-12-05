@@ -239,7 +239,7 @@
         checkToken: function (auth) {
             var tokenContainer = auth || this.getAuth();
 
-            if (!tokenContainer || !tokenContainer.token || new Date(tokenContainer.expires) < new Date()) {
+            if (!tokenContainer || !tokenContainer.token || !tokenContainer.expires || new Date(tokenContainer.expires) < new Date()) {
                 return false;
             }
 
