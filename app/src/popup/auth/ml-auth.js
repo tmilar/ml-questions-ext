@@ -77,6 +77,16 @@ var Auth = (function () {
             localStorage.set('users', users);
         },
 
+        removeUser: function (userId) {
+            var users = localStorage.get('users');
+            if (!users[userId]) {
+                console.error("Error, user id ", userId, "not found! ");
+                return false;
+            }
+            delete users[userId];
+            localStorage.set('users', users);
+            return true;
+        },
         getUsers: function () {
             return localStorage.get('users');
         }
@@ -95,7 +105,8 @@ var Auth = (function () {
 
     return {
         startLogin: startLogin,
-        init: init
+        init: init,
+        removeUser: User.removeUser
     }
 })();
 _.extend(Auth, Backbone.Events);
