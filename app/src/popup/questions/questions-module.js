@@ -141,11 +141,11 @@ var QuestionsModule = (function QuestionsModule() {
         return Promise.resolve(result);
     }
 
-    function toggleAllQuestions(event) {
-        var $questions = $('[data-js="questions-answer-group"]');
+    function toggleAllQuestions(e) {
+        var $questions = $(e.target).parents().siblings(".seller").find(".question");
 
         $questions.each(function () {
-            event.target.checked ? _openQuestion($(this)) : _closeQuestion($(this));
+            e.target.checked ? _openQuestion($(this)) : _closeQuestion($(this));
         });
     }
 
