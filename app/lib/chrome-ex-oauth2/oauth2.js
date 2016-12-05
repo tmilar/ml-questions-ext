@@ -195,9 +195,26 @@ LoginAbortException.prototype = new Error;
                                 self.loginTabId = window.tabs[0].id;
                                 self.loginWindowId = window.id;
 
-                                chrome.tabs.executeScript(self.loginTabId, {
-                                    code: '$("#user_id").val(' + USER_TO_LOGIN + ').prop("disabled", true).css("background-color", "#f0f0f0 !important")'
-                                });
+                                /// If username is present, force user to login with that username
+                                if(userToLogin) {
+                                    var lockLoginUsername = function lockLoginUsername(username) {
+                                        console.log('login for ', username);
+                                        var userInputContainer = document.getElementById('userIdFieldBox');
+                                        userInputContainer.classList.add("ch-form-disabled");
+                                        var user = document.getElementById('user_id');
+                                        user.value = username;
+                                        user.style.cursor = 'not-allowed';
+                                        user.readOnly = true;
+                                        var pass = document.getElementById('password');
+                                        pass.style.backgroundColor = 'rgb(250, 255, 189)';
+                                    };
+
+                                    chrome.tabs.executeScript(self.loginTabId, {
+                                        code: "(" + setLoginUsername.toString()  + ")('" + userToLogin + "')",
+                                        runAt: "document_end"
+                                    });
+                                }
+
                                 chrome.windows.onRemoved.addListener(function onRemovedPopup(windowId) {
                                     if(windowId === window.id) {
                                         _restoreCookies(sessionCookies);
