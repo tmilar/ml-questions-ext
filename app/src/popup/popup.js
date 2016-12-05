@@ -24,7 +24,7 @@ var waitMe = {
 
 
 function loginSuccess(user) {
-    QuestionsModule.initialize(user);
+    QuestionsModule().initialize(user);
 }
 
 $(document).ready(function () {

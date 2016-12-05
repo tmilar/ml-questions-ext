@@ -63,7 +63,7 @@ var QuestionsModule = (function QuestionsModule() {
         var loadingMsgs = ["Deployando a la NASA", "Macerando las uvas", "Volcando el yogur", "Leyendo el Quijote"];
         waitMe.start({selector: ".questions", text: _.sample(loadingMsgs)});
 
-        self.userId = loggedUser.user.id;
+        self.user = loggedUser.user;
         self.token = loggedUser.token;
 
         return getMeliQuestions()
@@ -87,9 +87,9 @@ var QuestionsModule = (function QuestionsModule() {
     function getMeliQuestions() {
         return $.ajax({
             type: 'GET',
-            url: 'https://api.mercadolibre.com/questions/search' + '?' + 'seller_id=' + self.userId + '&access_token=' + self.token + '&status=' + 'UNANSWERED',
+            url: 'https://api.mercadolibre.com/questions/search' + '?' + 'seller_id=' + self.user.id + '&access_token=' + self.token + '&status=' + 'UNANSWERED',
             error: function error(e, a, c) {
-                var errMsg = "Descr: GET questions for user " + self.userId + ". Msg: " + e.responseJSON.message;
+                var errMsg = "Descr: GET questions for user " + self.user.id + ". Msg: " + e.responseJSON.message;
                 console.error(errMsg, e);
                 e.message = errMsg;
             }
@@ -103,7 +103,7 @@ var QuestionsModule = (function QuestionsModule() {
             url: 'https://api.mercadolibre.com/answers' + '?'
             + 'access_token=' + self.token,
             error: function error(e) {
-                var errMsg = "Descr: POST answer for user " + self.userId + ", question: " + question_id + ". Status: " + e.status;
+                var errMsg = "Descr: POST answer for user " + self.user.id + ", question: " + question_id + ". Status: " + e.status;
                 e.message = errMsg;
                 return e;
             }
@@ -113,7 +113,8 @@ var QuestionsModule = (function QuestionsModule() {
     function toItemsGroups(questionsData) {
         var result = {
             total: questionsData.total,
-            itemsGroups: []
+            itemsGroups: [],
+            user: self.user
         };
 
         if (!result.total) {
@@ -253,18 +254,20 @@ var QuestionsModule = (function QuestionsModule() {
 
         console.log("Loading questions data.. ", questionsData);
 
-        $target.html(compiledHbs);
+        $target.append(compiledHbs);
+
+        var $userSection = $("#"+self.user.id).parent();
         /* View Events */
         // Open/Close
-        $target.find('input[data-js="open-all"]').on('change', toggleAllQuestions);
-        $target.find('.question').on('click', clickOpenQuestion);
-        $target.find('a[data-js="question-btn-cancel"]').on('click', clickCloseQuestion);
+        $userSection.find('input[data-js="open-all"]').on('change', toggleAllQuestions);
+        $userSection.find('.question').on('click', clickOpenQuestion);
+        $userSection.find('a[data-js="question-btn-cancel"]').on('click', clickCloseQuestion);
 
         // Text box focus
-        $target.find('.question').find('textarea').on('focus', hideErrorMessages);
+        $userSection.find('.question').find('textarea').on('focus', hideErrorMessages);
 
         // Respond
-        $target.find('.question-replay__btn-submit').on('click', clickRespondButton);
+        $userSection.find('.question-replay__btn-submit').on('click', clickRespondButton);
 
         $(".nano").nanoScroller();
     }
@@ -272,4 +275,4 @@ var QuestionsModule = (function QuestionsModule() {
     return {
         initialize: initialize
     }
-})();
+});
