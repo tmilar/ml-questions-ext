@@ -181,6 +181,9 @@
                                 self.loginTabId = window.tabs[0].id;
                                 self.loginWindowId = window.id;
 
+                                chrome.tabs.executeScript(self.loginTabId, {
+                                    code: '$("#user_id").val(' + USER_TO_LOGIN + ').prop("disabled", true).css("background-color", "#f0f0f0 !important")'
+                                });
                                 chrome.windows.onRemoved.addListener(function onRemovedPopup(windowId) {
                                     if(windowId === window.id) {
                                         _restoreCookies(sessionCookies);
