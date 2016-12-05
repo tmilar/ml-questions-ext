@@ -258,7 +258,10 @@ var QuestionsModule = (function QuestionsModule() {
         if(removeConfirm) {
             console.log("Eliminado el user ", userName, " (id: ", userId, ")");
             Auth.removeUser(userId);
-            $userHeader.closest("main").hide("explode", _updateScroller);
+            $userHeader.closest("main").hide("explode", {pieces: 50}, 1200, function() {
+                $(this).remove();
+                _updateScroller();
+            });
         }
     }
 
