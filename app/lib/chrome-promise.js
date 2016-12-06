@@ -79,9 +79,9 @@ var CookiePromise = (function CookiePromise() {
     }
 
     function _cookieDomainToUrl(cookie) {
-        var domain = cookie.domain.replace(/\.www/, "www");
+        var domain = cookie.domain.replace(/^\./, "");
         var www = (domain.indexOf("www") >= 0) ? "" : "www";
-        return "http" + (cookie.secure ? "s" : "") + "://" + www + domain + cookie.path;
+        return "http" + (cookie.secure ? "s" : "") + "://" + www + "." + domain + cookie.path;
     }
 
     function removeCookie(cookie) {
