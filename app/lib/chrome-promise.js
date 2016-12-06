@@ -58,10 +58,12 @@ var CookiePromise = (function CookiePromise() {
         return new Promise(function (resolve, reject) {
             chrome.cookies.getAll({}, function (cookies) {
                 if (chrome.runtime.lastError) {
-                    reject(new Error(chrome.runtime.lastError.message));
+                    var e = new Error(chrome.runtime.lastError.message);
+                    console.error(e);
+                    reject(e);
                 }
-                if (!cookies) {
-                    reject(new Error("No cookies obtained..."))
+                if (_.isEmpty(cookies)) {
+                    console.warn("No cookies obtained with options: ", options);
                 }
 
                 var result = cookies;
@@ -70,7 +72,7 @@ var CookiePromise = (function CookiePromise() {
                         return options.domainFilter.test(c.domain);
                     });
                 }
-                console.debug("Obtained", cookies.length, "cookies: \n", result);
+                console.debug("Obtained", cookies.length, "cookies, of which only " + result.length + " are relevant: \n", result);
                 resolve(result);
             })
         });
@@ -92,7 +94,7 @@ var CookiePromise = (function CookiePromise() {
                     reject(e);
                 }
 
-                console.debug("Removed " + removed + " cookie!");
+                console.debug("Removed cookie!", removed);
                 resolve(removed);
             });
         });
@@ -103,14 +105,14 @@ var CookiePromise = (function CookiePromise() {
             var restoredValues = _.pick(cookie, ["url", "name", "value", "domain", "path", "secure", "httpOnly", "sameSite", "expirationDate", "storeId"]);
             restoredValues.url = _cookieDomainToUrl(cookie);
 
-            console.debug("Restore cookie: ", restoredValues, " from original: ", cookie);
+            console.debug("Restoring cookie: ", restoredValues.url, restoredValues.name);
 
             chrome.cookies.set(restoredValues, function (r) {
                 if (chrome.runtime.lastError) {
                     var e = new Error("cookie restored bad: " + chrome.runtime.lastError.message);
                     reject(e);
                 }
-                console.debug("Restored cookie:", restoredValues, "; result:", r, "-- original was: ", cookie);
+                console.debug("Restored cookie:", restoredValues.url, restoredValues.name, ". Result:", r);
                 resolve(r);
             });
         })
