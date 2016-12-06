@@ -115,6 +115,26 @@ LoginAbortException.prototype = new Error;
         return false;
     }
 
+    function _forceUsernameLogin(newPopupTabId, username) {
+
+        // to be injected in new popup
+        function lockLoginUsername(username) {
+            console.log('login for ', username);
+            var userInputContainer = document.getElementById('userIdFieldBox');
+            userInputContainer.classList.add("ch-form-disabled");
+            var user = document.getElementById('user_id');
+            user.value = username;
+            user.style.cursor = 'not-allowed';
+            user.readOnly = true;
+            var pass = document.getElementById('password');
+            pass.style.backgroundColor = 'rgb(250, 255, 189)';
+        }
+
+        chrome.tabs.executeScript(newPopupTabId, {
+            code: "(" + lockLoginUsername.toString() + ")('" + username + "')"
+        });
+    }
+
     window.oauth2 = {
 
         options: options,
@@ -147,22 +167,7 @@ LoginAbortException.prototype = new Error;
 
                     /// If login username is present, force user to login with that username
                     if (userToLogin) {
-                        var lockLoginUsername = function lockLoginUsername(username) {
-                            console.log('login for ', username);
-                            var userInputContainer = document.getElementById('userIdFieldBox');
-                            userInputContainer.classList.add("ch-form-disabled");
-                            var user = document.getElementById('user_id');
-                            user.value = username;
-                            user.style.cursor = 'not-allowed';
-                            user.readOnly = true;
-                            var pass = document.getElementById('password');
-                            pass.style.backgroundColor = 'rgb(250, 255, 189)';
-                        };
-
-                        chrome.tabs.executeScript(self.loginTabId, {
-                            code: "(" + lockLoginUsername.toString() + ")('" + userToLogin + "')",
-                            runAt: "document_end"
-                        });
+                        _forceUsernameLogin(loginTabId, userToLogin);
                     }
 
                     chrome.windows.onRemoved.addListener(function onRemovedPopup(windowId) {
