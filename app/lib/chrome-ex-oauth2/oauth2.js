@@ -221,17 +221,8 @@ LoginAbortException.prototype = new Error;
             });
         },
 
-        /**
-         * Retreives the authorization token from local storage.
-         *
-         * @return Object containing token & user login info
-         */
-        getAuth: function () {
-            return localStorage.get(options.key);
-        },
-
         checkToken: function (auth) {
-            var tokenContainer = auth || this.getAuth();
+            var tokenContainer = auth;
 
             if (!tokenContainer || !tokenContainer.token || !tokenContainer.expires || new Date(tokenContainer.expires) < new Date()) {
                 return false;
