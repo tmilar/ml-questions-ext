@@ -172,6 +172,7 @@ LoginAbortException.prototype = new Error;
 
                     chrome.windows.onRemoved.addListener(function onRemovedPopup(windowId) {
                         if (windowId === loginWindowId) {
+                            console.debug("windows.onRemoved ! ", windowId);
 
                             chrome.windows.onRemoved.removeListener(onRemovedPopup);
 
@@ -193,11 +194,11 @@ LoginAbortException.prototype = new Error;
                         if (!(changeInfo.url)) {
                             return;
                         }
-                        //console.log("FINISH by new tab change... " + JSON.stringify(changeInfo));
-
+                        console.debug("tabs.onUpdated ! ", tabId, changeInfo);
                         try {
                             var loginResult = _finish(changeInfo.url, startRequestTime);
                         } catch (e) {
+                            console.debug("Error on _finish! ", e);
                             _removeLoginTab();
                             chrome.tabs.onUpdated.removeListener(checkAccessToken);
                             if (errorCb instanceof Function) {
