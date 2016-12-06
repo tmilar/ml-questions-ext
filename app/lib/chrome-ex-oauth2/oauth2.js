@@ -42,10 +42,8 @@ LoginAbortException.prototype = new Error;
      */
     function _finish(url, startRequestTime) {
 
-        console.log("[oauth2] finishin! url: ", url);
-
         if (url.match(/\?error=(.+)/)) {
-            console.error("[oauth2] error after login attempt. Url: ", url);
+            console.error("[oauth2] finished with auth error response after login attempt. Url: ", url);
             throw new Error("Error after login attempt");
         }
 
@@ -70,7 +68,7 @@ LoginAbortException.prototype = new Error;
 
             localStorage.set(options.key, auth);
 
-            console.log("stored access token ", accessToken, " from url ", url);
+            console.log("[oauth2] finish successful! stored access token ", accessToken, " from url ", url);
             _removeLoginTab();
             return auth;
         }
@@ -111,7 +109,7 @@ LoginAbortException.prototype = new Error;
             return true;
         }
 
-        console.warn("[oauth2] finish url unhandled response ", url);
+        console.warn("[oauth2] tab updated, but URL has not been handled ", url);
         return false;
     }
 
@@ -196,7 +194,7 @@ LoginAbortException.prototype = new Error;
                         }
                         console.debug("tabs.onUpdated ! ", tabId, changeInfo);
                         try {
-                            var loginResult = _finish(changeInfo.url, startRequestTime);
+                            var loginSuccess = _finish(changeInfo.url, startRequestTime);
                         } catch (e) {
                             console.debug("Error on _finish! ", e);
                             _removeLoginTab();
@@ -208,11 +206,11 @@ LoginAbortException.prototype = new Error;
                             }
                         }
 
-                        if (loginResult) {
+                        if (loginSuccess) {
                             /// return to extension popup
                             // unregister listener
                             chrome.tabs.onUpdated.removeListener(checkAccessToken);
-                            return successCb instanceof Function ? successCb(loginResult) : "OK";
+                            return successCb instanceof Function ? successCb(loginSuccess) : "OK";
                         } else {
                             // not finished yet..
                         }

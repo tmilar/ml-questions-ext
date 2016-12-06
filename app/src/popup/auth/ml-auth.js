@@ -14,13 +14,13 @@ var Auth = (function () {
 
         if (user && _checkLogin(user)) {
             // user was logged already - exit early
-            console.log("User was already logged in: ", user);
+            console.log("[login] User was already logged in: ", user);
             self.trigger('login', user);
-            return Promise.resolve(user);
+            return user;
         }
 
         // force start a new login
-        console.log("User was NOT logged in, refreshing login: ", user);
+        console.log("[login] User was NOT logged in, refreshing login: ", user);
         return startNewLogin(user);
     }
 
@@ -161,8 +161,8 @@ var Auth = (function () {
             .then(function () {
                 return processLogins(users);
             })
-            .then(function log() {
-                console.log("Login phase finished!");
+            .then(function log(users) {
+                console.log("Login phase finished!", users);
             })
             .then(cookiesRestoreAllPromise)
             .then(function log(cs) {
