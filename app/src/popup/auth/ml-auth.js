@@ -4,10 +4,11 @@ var Auth = (function () {
 
     function _checkLogin(user) {
         if (!user) {
+            console.error("BAD LOGIC: No user to check login with!", user);
             return false;
         }
         var userLoggedIn = window.oauth2.checkToken(user);
-        console.log("logged? ", !!userLoggedIn, userLoggedIn);
+        console.log("logged? ", !!userLoggedIn, user);
         return userLoggedIn;
     }
 
