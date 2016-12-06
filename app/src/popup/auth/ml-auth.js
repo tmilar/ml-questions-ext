@@ -117,33 +117,35 @@ var Auth = (function () {
         window.oauth2.options.user_id = "user_id";
 
         var registeredUsers = User.getUsersArray();
-        return executeLogin(registeredUsers);
+        doLogin(registeredUsers);
     }
 
     /**
-     *  Execute whole login sequence for one or many user(s)
+     *  Execute whole login sequence for a new user, or already existing users
      *
      * 1. save & remove original ML cookies
-     * 2. for each user in {{users}}:
-     *      a. start -> finish login (user)
+     * 2. begin:  login [empty|user]
+     *      a. complete login
      *      b. clean cookies
      *      c. trigger new 'login' event
+     *      d. repeat: while {{users}}
      * 3. restore original ML cookies
      *
-     * @param users - One single user, or an array of multiple users
-     * @returns {Promise.<TResult>}
+     * @param users|undefined - Array of users, or nothing (for new login)
+     * @returns void
      */
-    function executeLogin(users) {
-
-        // Treat a single user, or an array of users always as an array
-        users = _.flatten([users]);
+    function doLogin(users) {
+        if (Array.isArray(users) && _.isEmpty(users)) {
+            console.log("There are no registered users to login. Please, register some users first");
+            return;
+        }
         var cookies;
 
         var cookiesSaveAllPromise = function () {
             return CookiePromise.getAll()
                 .then(function (cs) {
                     cookies = cs;
-                    console.log("Saved all cookies (" + cookies.length + ")!", cookies);
+                    console.log("Saved all cookies (" + cookies.length + ")!");
                 })
         };
 
@@ -157,19 +159,28 @@ var Auth = (function () {
             return CookiePromise.restoreAll(cookies);
         };
 
-        return cookiesStoreAllPromise()
-            .thenReturn(users)
-            .mapSeries(function loginUserAndClean(user) {
-                return startLogin(user)
-                    .then(CookiePromise.removeAll);
+        cookiesStoreAllPromise()
+            .then(function () {
+                return processLogins(users);
             })
             .then(function log() {
-                console.log("Finished serially all logins!");
+                console.log("Login phase finished!");
             })
             .then(cookiesRestoreAllPromise)
             .then(function log(cs) {
-                console.log("Restored all original cookies!", cs.length, cs);
+                console.log("Restored all original cookies!", cs.length);
             });
+    }
+
+    // return promise that process logins, of a new (empty) user, or an array of existing ones
+    function processLogins(users) {
+        if (users === undefined) {
+            // new login
+            console.log("New user! Starting new login");
+            return startNewLogin();
+        }
+        // existing users login
+        return Promise.mapSeries(users, startLogin);
     }
 
     return _.extend(self, {
