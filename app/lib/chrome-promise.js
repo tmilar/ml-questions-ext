@@ -100,6 +100,10 @@ var CookiePromise = (function CookiePromise() {
         });
     }
 
+    function removeAllCookies(options) {
+        return Promise.map(getCookies(options), removeCookie);
+    }
+
     function restoreCookie(cookie) {
         return new Promise(function (resolve, reject) {
             var restoredValues = _.pick(cookie, ["url", "name", "value", "domain", "path", "secure", "httpOnly", "sameSite", "expirationDate", "storeId"]);
@@ -118,9 +122,15 @@ var CookiePromise = (function CookiePromise() {
         })
     }
 
+    function restoreAllCookies(cookies) {
+        return Promise.map(cookies, restoreCookie);
+    }
+
     return {
         get: getCookies,
         remove: removeCookie,
-        restore: restoreCookie
+        removeAll: removeAllCookies,
+        restore: restoreCookie,
+        restoreAll: restoreAllCookies
     }
 })();
