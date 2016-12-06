@@ -184,9 +184,9 @@ var Auth = (function () {
     }
 
     return _.extend(self, {
-        startLogin: startLogin,
         init: init,
-        removeUser: User.removeUser
+        removeUser: User.removeUser,
+        newLogin: doLogin
     });
 })();
 _.extend(Auth, Backbone.Events);

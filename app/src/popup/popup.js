@@ -32,6 +32,6 @@ $(document).ready(function () {
     Auth.init();
 
     $(".add-account").on('click', function () {
-        Auth.startLogin();
+        Auth.newLogin();
     });
 });
