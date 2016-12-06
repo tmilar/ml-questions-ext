@@ -100,9 +100,44 @@ var Auth = (function () {
         window.oauth2.options.user_id = "user_id";
 
         var self = this;
-        _.each(User.getUsers(), function (user) {
-            self.startLogin(user);
-        });
+        // 1. save & remove original ML cookies
+        // 2. for each registered user:
+        //      a. start -> finish login (user)
+        //      b. clean cookies
+        //      c. trigger new 'login' event
+        // 3. restore original ML cookies
+
+        var cookies;
+
+        var cookiesSaveAllPromise = function () {
+            return CookiePromise.getAll()
+                .then(function (cs) {
+                    cookies = cs;
+                    console.log("Saved all cookies (" + cookies.length + ")!", cookies);
+                })
+        };
+
+        var cookiesRestoreAllPromise = function () {
+            console.debug("Restoring all cookies.. ", cookies.length, cookies);
+            return CookiePromise.restoreAll(cookies);
+        };
+
+        return cookiesSaveAllPromise()
+            .then(function getRegisteredUsers() {
+                var usersHash = User.getUsers();
+                return _.values(usersHash);
+            })
+            .mapSeries(function loginUserAndClean(user) {
+                return self.startLogin(user)
+                    .then(CookiePromise.removeAll);
+            })
+            .then(function log() {
+                console.log("Finished serially all logins!");
+            })
+            .then(cookiesRestoreAllPromise)
+            .then(function log(cs) {
+                console.log("Restored all original cookies!", cs.length, cs);
+            });
     }
 
     return {
