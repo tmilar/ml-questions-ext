@@ -61,10 +61,12 @@ var QuestionsModule = (function QuestionsModule() {
             return;
         }
 
-        var alreadyLoggedUsers = $(".username").text();
+        var alreadyLoggedUsers = $(".username").map(function () {
+            return $(this).text()
+        }).toArray();
 
         if (alreadyLoggedUsers.indexOf(loggedUser.user.nickname) > -1) {
-            console.error("User " + loggedUser.user.nickname + " was already logged in! No new questions added." );
+            console.error("User " + loggedUser.user.nickname + " was already logged in! No new questions added.");
             return;
         }
 
@@ -255,10 +257,10 @@ var QuestionsModule = (function QuestionsModule() {
         var userId = $userHeader.attr("id");
         var userName = $userHeader.find(".username").text();
         var removeConfirm = confirm("Estas seguro que deseas remover la cuenta " + userName + "?");
-        if(removeConfirm) {
+        if (removeConfirm) {
             console.log("Eliminado el user ", userName, " (id: ", userId, ")");
             Auth.removeUser(userId);
-            $userHeader.closest("main").hide("explode", {pieces: 50}, 1200, function() {
+            $userHeader.closest("main").hide("explode", {pieces: 50}, 1200, function () {
                 $(this).remove();
                 _updateScroller();
             });
