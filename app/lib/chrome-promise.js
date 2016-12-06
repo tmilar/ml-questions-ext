@@ -127,7 +127,7 @@ var CookiePromise = (function CookiePromise() {
     }
 
     return {
-        get: getCookies,
+        getAll: getCookies,
         remove: removeCookie,
         removeAll: removeAllCookies,
         restore: restoreCookie,
