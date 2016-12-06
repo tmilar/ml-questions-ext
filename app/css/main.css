@@ -28,7 +28,7 @@ h1 {
 .account__btn-delete {
     display: block;
     position: absolute;
-    padding: 5px 0 5px 5px;
+    padding: 5px 0 5px 10px;
     right: 5px;
     z-index: 1;
     margin-top: 0;
@@ -38,8 +38,8 @@ h1 {
 
 .account__btn-delete:hover {
     color: red;
-    background: #e5e5e5;
-    border-radius: 5px;
+    background: linear-gradient(90deg, rgba(0,0,0,0.05) 82%, #e5e5e5 30%) ;
+    border-radius: 25px;
 }
 
 .account__btn-delete .ch-icon-trash {
