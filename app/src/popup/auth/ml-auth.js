@@ -14,11 +14,11 @@ var Auth = (function () {
 
     function startLogin(user) {
 
-        var loggedUser = _checkLogin(user);
-        if (loggedUser) {
-            return Promise.resolve(loggedUser).then(function (user) {
-                self.trigger('login', user);
-            });
+        if (user && _checkLogin(user)) {
+            // user was logged already - exit early
+            console.log("User was already logged in: ", user);
+            self.trigger('login', user);
+            return Promise.resolve(user);
         }
 
         // force start a new login
