@@ -104,13 +104,26 @@ var Auth = (function () {
         window.oauth2.options.user_id = "user_id";
 
         var registeredUsers = User.getUsersArray();
-        // 1. save & remove original ML cookies
-        // 2. for each user in {{users}}:
-        //      a. start -> finish login (user)
-        //      b. clean cookies
-        //      c. trigger new 'login' event
-        // 3. restore original ML cookies
+        return executeLogin(registeredUsers);
+    }
 
+    /**
+     *  Execute whole login sequence for one or many user(s)
+     *
+     * 1. save & remove original ML cookies
+     * 2. for each user in {{users}}:
+     *      a. start -> finish login (user)
+     *      b. clean cookies
+     *      c. trigger new 'login' event
+     * 3. restore original ML cookies
+     *
+     * @param users - One single user, or an array of multiple users
+     * @returns {Promise.<TResult>}
+     */
+    function executeLogin(users) {
+
+        // Treat a single user, or an array of users always as an array
+        users = _.flatten([users]);
         var cookies;
 
         var cookiesSaveAllPromise = function () {
@@ -132,9 +145,9 @@ var Auth = (function () {
         };
 
         return cookiesStoreAllPromise()
-            .thenReturn(registeredUsers)
+            .thenReturn(users)
             .mapSeries(function loginUserAndClean(user) {
-                return self.startLogin(user)
+                return startLogin(user)
                     .then(CookiePromise.removeAll);
             })
             .then(function log() {
