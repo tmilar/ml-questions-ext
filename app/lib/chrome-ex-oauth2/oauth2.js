@@ -22,8 +22,7 @@ LoginAbortException.prototype = new Error;
         '?client_id=162744410854883' +
         '&response_type=token' +
         '&scope=public_profile,email' +
-        '&redirect_uri=https://www.facebook.com/connect/login_success.html',
-        forceNewLogin: false
+        '&redirect_uri=https://www.facebook.com/connect/login_success.html'
     };
 
     function _removeLoginTab() {
