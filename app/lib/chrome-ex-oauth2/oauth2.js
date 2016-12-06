@@ -140,8 +140,10 @@ LoginAbortException.prototype = new Error;
 
                 chrome.windows.create({url: url, type: 'popup', incognito: currentWindow.incognito}, function (window) {
 
-                    self.loginTabId = window.tabs[0].id;
-                    self.loginWindowId = window.id;
+                    var loginTabId = window.tabs[0].id;
+                    var loginWindowId = window.id;
+
+                    self.loginTabId = loginTabId;
 
                     /// If login username is present, force user to login with that username
                     if (userToLogin) {
@@ -164,7 +166,7 @@ LoginAbortException.prototype = new Error;
                     }
 
                     chrome.windows.onRemoved.addListener(function onRemovedPopup(windowId) {
-                        if (windowId === window.id) {
+                        if (windowId === loginWindowId) {
 
                             chrome.windows.onRemoved.removeListener(onRemovedPopup);
 
@@ -178,7 +180,7 @@ LoginAbortException.prototype = new Error;
                     });
 
                     chrome.tabs.onUpdated.addListener(function checkAccessToken(tabId, changeInfo, tab) {
-                        if (tabId !== self.loginTabId) {
+                        if (tabId !== loginTabId) {
                             return;
                         }
 
