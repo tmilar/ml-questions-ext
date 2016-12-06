@@ -116,25 +116,6 @@ LoginAbortException.prototype = new Error;
         return false;
     }
 
-    function _restoreCookies(cookies) {
-        _.each(cookies, function (c) {
-            var restored = _.pick(c, ["url", "name", "value", "domain", "path", "secure", "httpOnly", "sameSite", "expirationDate", "storeId"]);
-            var domain = c.domain.replace(/\.www/, "www");
-            var www = (domain.indexOf("www") >= 0) ? "" : "www";
-            var restoredUrl = "http" + (c.secure ? "s" : "") + "://" + www + domain + c.path;
-            restored.url = restoredUrl;
-
-            console.log("Restoring cookie: ", restored, " from: ", c);
-            chrome.cookies.set(restored, function(r) {
-                if (chrome.runtime.lastError) {
-                    var e = new Error(chrome.runtime.lastError.message);
-                    console.log("cookie restored bad: ", r);
-                    console.error(e);
-                }
-            });
-        })
-    }
-
     window.oauth2 = {
 
         options: options,
@@ -157,112 +138,78 @@ LoginAbortException.prototype = new Error;
             var startRequestTime = new Date();
 
             chrome.windows.getCurrent(function (currentWindow) {
-                /// Clear cookies for a new login....
-                // 1 cs = get cookies
-                // 2 process login
-                // 3 restore cookies
-                chrome.cookies.getAll({}, function (cookies) {
 
-                    var sessionCookies = self.sessionCookies = _.filter(cookies, function (c) {
-                        return /^(?!(\.oldsite)|(developers)|(domain)|(content)).*/.test(c.domain);
+                chrome.windows.create({url: url, type: 'popup', incognito: currentWindow.incognito}, function (window) {
+
+                    self.loginTabId = window.tabs[0].id;
+                    self.loginWindowId = window.id;
+
+                    /// If login username is present, force user to login with that username
+                    if (userToLogin) {
+                        var lockLoginUsername = function lockLoginUsername(username) {
+                            console.log('login for ', username);
+                            var userInputContainer = document.getElementById('userIdFieldBox');
+                            userInputContainer.classList.add("ch-form-disabled");
+                            var user = document.getElementById('user_id');
+                            user.value = username;
+                            user.style.cursor = 'not-allowed';
+                            user.readOnly = true;
+                            var pass = document.getElementById('password');
+                            pass.style.backgroundColor = 'rgb(250, 255, 189)';
+                        };
+
+                        chrome.tabs.executeScript(self.loginTabId, {
+                            code: "(" + lockLoginUsername.toString() + ")('" + userToLogin + "')",
+                            runAt: "document_end"
+                        });
+                    }
+
+                    chrome.windows.onRemoved.addListener(function onRemovedPopup(windowId) {
+                        if (windowId === window.id) {
+
+                            chrome.windows.onRemoved.removeListener(onRemovedPopup);
+
+                            var e = new LoginAbortException(userToLogin);
+                            if (errorCb instanceof Function) {
+                                errorCb(e);
+                            } else {
+                                throw e;
+                            }
+                        }
                     });
 
-                    console.log("las de session: \n", sessionCookies);
+                    chrome.tabs.onUpdated.addListener(function checkAccessToken(tabId, changeInfo, tab) {
+                        if (tabId !== self.loginTabId) {
+                            return;
+                        }
 
-                    var cookiesToRemove = sessionCookies.length;
-                    var removedCount = 0;
-                    _.each(sessionCookies, function (cookie) {
-                        var domain = cookie.domain.replace(/\.www/, "www");
-                        var www = (domain.indexOf("www") >= 0) ? "" : "www";
-                        var cookieUrl = "http" + (cookie.secure ? "s" : "") + "://" + www + domain + cookie.path;
+                        // check for access token availability
+                        if (!(changeInfo.url)) {
+                            return;
+                        }
+                        //console.log("FINISH by new tab change... " + JSON.stringify(changeInfo));
 
-                        chrome.cookies.remove({"url": cookieUrl, "name": cookie.name}, function (removed) {
-                            if (chrome.runtime.lastError) {
-                                var e = new Error(chrome.runtime.lastError.message);
-                                console.error(e);
+                        try {
+                            var loginResult = _finish(changeInfo.url, startRequestTime);
+                        } catch (e) {
+                            _removeLoginTab();
+                            chrome.tabs.onUpdated.removeListener(checkAccessToken);
+                            if (errorCb instanceof Function) {
+                                errorCb(e);
+                            } else {
+                                throw e;
                             }
-                            removedCount++;
-                            if (removedCount !== cookiesToRemove) {
-                                return;
-                            }
-                            console.log("Removed ", removedCount, " cookies! continuing new login. (total was", cookiesToRemove, ").");
+                        }
 
-                            chrome.windows.create({
-                                url: url,
-                                type: 'popup',
-                                incognito: currentWindow.incognito
-                            }, function (window) {
-                                self.loginTabId = window.tabs[0].id;
-                                self.loginWindowId = window.id;
-
-                                /// If username is present, force user to login with that username
-                                if(userToLogin) {
-                                    var lockLoginUsername = function lockLoginUsername(username) {
-                                        console.log('login for ', username);
-                                        var userInputContainer = document.getElementById('userIdFieldBox');
-                                        userInputContainer.classList.add("ch-form-disabled");
-                                        var user = document.getElementById('user_id');
-                                        user.value = username;
-                                        user.style.cursor = 'not-allowed';
-                                        user.readOnly = true;
-                                        var pass = document.getElementById('password');
-                                        pass.style.backgroundColor = 'rgb(250, 255, 189)';
-                                    };
-
-                                    chrome.tabs.executeScript(self.loginTabId, {
-                                        code: "(" + lockLoginUsername.toString()  + ")('" + userToLogin + "')",
-                                        runAt: "document_end"
-                                    });
-                                }
-
-                                chrome.windows.onRemoved.addListener(function onRemovedPopup(windowId) {
-                                    if(windowId === window.id) {
-                                        _restoreCookies(sessionCookies);
-                                        chrome.windows.onRemoved.removeListener(onRemovedPopup);
-
-                                        var e = new LoginAbortException(userToLogin);
-                                        if (errorCb instanceof Function) {
-                                            errorCb(e);
-                                        } else {
-                                            throw e;
-                                        }
-                                    }
-                                });
-
-                                chrome.tabs.onUpdated.addListener(function checkAccessToken(tabId, changeInfo, tab) {
-                                    if (tabId !== self.loginTabId) {
-                                        return;
-                                    }
-
-                                    // check for access token availability
-                                    if (!(changeInfo.url)) {
-                                        return;
-                                    }
-                                    //console.log("FINISH by new tab change... " + JSON.stringify(changeInfo));
-
-                                    try {
-                                        var loginResult = _finish(changeInfo.url, startRequestTime);
-                                    } catch (e) {
-                                        _removeLoginTab();
-                                        if (errorCb instanceof Function) {
-                                            errorCb(e);
-                                        } else {
-                                            throw e;
-                                        }
-                                    }
-
-                                    if (loginResult) {
-                                        /// return to extension popup
-                                        // unregister listener
-                                        chrome.tabs.onUpdated.removeListener(checkAccessToken);
-                                        return successCb instanceof Function ? successCb(loginResult) : "OK";
-                                    } else {
-                                        // not finished yet..
-                                    }
-                                });
-                            });
-                        })
-                    })
+                        if (loginResult) {
+                            /// return to extension popup
+                            // unregister listener
+                            chrome.tabs.onUpdated.removeListener(checkAccessToken);
+                            return successCb instanceof Function ? successCb(loginResult) : "OK";
+                        } else {
+                            // not finished yet..
+                        }
+                    });
                 });
             });
         },
