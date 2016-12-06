@@ -21,7 +21,7 @@ var Auth = (function () {
 
         // force start a new login
         window.oauth2.options.forceNewLogin = true;
-        if(user && user.user && user.user.nickname) {
+        if (user && user.user && user.user.nickname) {
             window.oauth2.options.userToLogin = user.user.nickname;
         }
         waitMe.start({selector: '.container', text: "iniciando sesion..."});
@@ -123,6 +123,7 @@ var Auth = (function () {
         };
 
         return cookiesSaveAllPromise()
+            .then(CookiePromise.removeAll)
             .then(function getRegisteredUsers() {
                 var usersHash = User.getUsers();
                 return _.values(usersHash);
