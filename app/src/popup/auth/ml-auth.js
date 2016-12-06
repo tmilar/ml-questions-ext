@@ -1,5 +1,7 @@
 var Auth = (function () {
 
+    var self = {};
+
     function _checkLogin(user) {
         if (!user) {
             return false;
@@ -11,7 +13,6 @@ var Auth = (function () {
 
     function startLogin(user) {
 
-        var self = this;
         var loggedUser = _checkLogin(user);
         if (loggedUser) {
             return Promise.resolve(loggedUser).then(function (user) {
@@ -103,7 +104,6 @@ var Auth = (function () {
         window.oauth2.options.user_id = "user_id";
 
         var registeredUsers = User.getUsersArray();
-        var self = this;
         // 1. save & remove original ML cookies
         // 2. for each user in {{users}}:
         //      a. start -> finish login (user)
@@ -146,10 +146,10 @@ var Auth = (function () {
             });
     }
 
-    return {
+    return _.extend(self, {
         startLogin: startLogin,
         init: init,
         removeUser: User.removeUser
-    }
+    });
 })();
 _.extend(Auth, Backbone.Events);
