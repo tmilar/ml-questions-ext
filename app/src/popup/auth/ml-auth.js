@@ -22,14 +22,24 @@ var Auth = (function () {
         }
 
         // force start a new login
-        window.oauth2.options.forceNewLogin = true;
-        if (user && user.user && user.user.nickname) {
-            window.oauth2.options.userToLogin = user.user.nickname;
-        }
+        console.log("User was NOT logged in, refreshing login: ", user);
+        return startNewLogin(user);
+    }
+
+    function startNewLogin(user) {
         waitMe.start({selector: '.container', text: "iniciando sesion..."});
 
         var newUserLogin = {};
-        return new Promise(window.oauth2.start.bind(window.oauth2))
+
+        var oauthPromise = function () {
+            if (user && user.user && user.user.nickname) {
+                window.oauth2.options.userToLogin = user.user.nickname;
+            }
+            return new Promise(window.oauth2.start.bind(window.oauth2));
+        };
+
+        return oauthPromise()
+            .tap(CookiePromise.removeAll)
             .then(function (tokenData) {
                 console.log("Login success!");
                 newUserLogin = tokenData;
@@ -41,8 +51,10 @@ var Auth = (function () {
                 console.log("saving user info: ", newUserLogin);
                 User.addUser(newUserLogin);
                 waitMe.stop();
-                self.trigger('login', newUserLogin);
                 return newUserLogin;
+            })
+            .then(function (user) {
+                self.trigger('login', user);
             })
             .catch(function (err) {
                 console.error("Login bad: " + err.stack);
