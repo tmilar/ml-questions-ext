@@ -91,6 +91,9 @@ var Auth = (function () {
         },
         getUsers: function () {
             return localStorage.get('users');
+        },
+        getUsersArray: function () {
+            return _.values(this.getUsers())
         }
     };
 
@@ -99,9 +102,10 @@ var Auth = (function () {
         window.oauth2.options.full_url = "http://auth.mercadolibre.com.ar/authorization?response_type=token&client_id=" + clientId;
         window.oauth2.options.user_id = "user_id";
 
+        var registeredUsers = User.getUsersArray();
         var self = this;
         // 1. save & remove original ML cookies
-        // 2. for each registered user:
+        // 2. for each user in {{users}}:
         //      a. start -> finish login (user)
         //      b. clean cookies
         //      c. trigger new 'login' event
@@ -117,17 +121,18 @@ var Auth = (function () {
                 })
         };
 
+        var cookiesStoreAllPromise = function () {
+            return cookiesSaveAllPromise()
+                .then(CookiePromise.removeAll);
+        };
+
         var cookiesRestoreAllPromise = function () {
             console.debug("Restoring all cookies.. ", cookies.length, cookies);
             return CookiePromise.restoreAll(cookies);
         };
 
-        return cookiesSaveAllPromise()
-            .then(CookiePromise.removeAll)
-            .then(function getRegisteredUsers() {
-                var usersHash = User.getUsers();
-                return _.values(usersHash);
-            })
+        return cookiesStoreAllPromise()
+            .thenReturn(registeredUsers)
             .mapSeries(function loginUserAndClean(user) {
                 return self.startLogin(user)
                     .then(CookiePromise.removeAll);
