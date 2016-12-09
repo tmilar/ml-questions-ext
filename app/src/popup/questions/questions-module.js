@@ -70,11 +70,27 @@ var QuestionsModule = (function QuestionsModule() {
             return;
         }
 
-        var loadingMsgs = ["Deployando a la NASA", "Macerando las uvas", "Volcando el yogur", "Leyendo el Quijote"];
-        waitMe.start({selector: ".questions", text: _.sample(loadingMsgs)});
-
         self.user = loggedUser.user;
         self.token = loggedUser.token;
+
+        showUserHeader();
+        showQuestions();
+    }
+
+    function showUserHeader() {
+        var user = self.user;
+        var compiledHbs = MeliPreguntasApp.templates['questions-view'](user);
+        var $target = $(".questions.content");
+
+        console.log("Rendering user header: ", user);
+
+        $target.append(compiledHbs);
+
+    }
+
+    function showQuestions() {
+        var loadingMsgs = ["Deployando a la NASA", "Macerando las uvas", "Volcando el yogur", "Leyendo el Quijote"];
+        waitMe.start({selector: ".questions", text: _.sample(loadingMsgs)});
 
         return getMeliQuestions()
             .then(populateItems)
@@ -88,7 +104,6 @@ var QuestionsModule = (function QuestionsModule() {
                 console.error("Error al intentar recuperar info de las preguntas: " + err.message);
             });
     }
-
     /*
      * ==================
      * ML API calls
@@ -275,20 +290,18 @@ var QuestionsModule = (function QuestionsModule() {
     }
 
     function render(questionsData) {
-        var compiledHbs = MeliPreguntasApp.templates['questions-view'](questionsData, {
+        var compiledHbs = MeliPreguntasApp.templates['questions-section'](questionsData, {
             helpers: {
                 toJSON: function (object) {
                     return JSON.stringify(object, undefined, 2);
                 }
             }
         });
-        var $target = $(".questions.content");
 
         console.log("Loading questions data.. ", questionsData);
 
-        $target.append(compiledHbs);
-
         var $userSection = $("#" + self.user.id).parent();
+        $userSection.append(compiledHbs);
         /* View Events */
         // Open/Close
         $userSection.find('input[data-js="open-all"]').on('change', toggleAllQuestions);
