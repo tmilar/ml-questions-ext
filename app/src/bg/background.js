@@ -1,10 +1,34 @@
 'use strict';
 
 chrome.runtime.onInstalled.addListener(function (details) {
-  console.log('previousVersion', details.previousVersion);
+    console.log('previousVersion', details.previousVersion);
 });
 
-chrome.browserAction.setBadgeText({ text: '\'Allo' });
+var openQuestions = 0;
 
-console.log('\'Allo \'Allo! Event Page for Browser Action');
-console.log('\'Allo \'Allo! Event Page for Browser Action');
+chrome.browserAction.setBadgeBackgroundColor({color: "#FF0000"});
+
+function updateBadgeText(value) {
+    if (value !== 0) {
+        chrome.browserAction.setBadgeText({text: value.toString()});
+    }
+}
+chrome.extension.onMessage.addListener(function (request, sender, sendResponse) {
+    console.debug("message received > ", request);
+    switch (request.type) {
+        case "questions:load": {
+            openQuestions += request.data.total;
+            updateBadgeText(openQuestions);
+            break;
+        }
+        case "questions:remove": {
+            openQuestions -= 1;
+            updateBadgeText(openQuestions);
+            break;
+        }
+        case "questions:restart": {
+            openQuestions = 0;
+            updateBadgeText(openQuestions);
+        }
+    }
+});

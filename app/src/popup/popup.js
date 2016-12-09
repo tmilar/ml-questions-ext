@@ -27,6 +27,8 @@ function loginSuccess(user) {
     QuestionsModule().initialize(user);
 }
 
+chrome.extension.sendMessage({type: "questions:restart"});
+
 $(document).ready(function () {
     Auth.on('login', loginSuccess);
     Auth.init();

@@ -97,6 +97,7 @@ var QuestionsModule = (function QuestionsModule() {
             .then(populateItems)
             .then(populateFromUsers)
             .then(toItemsGroups)
+            .then(sendToBackground)
             .then(render)
             .then(function () {
                 waitMe.stop(waitMeSelector);
@@ -169,6 +170,12 @@ var QuestionsModule = (function QuestionsModule() {
         return Promise.resolve(result);
     }
 
+    function sendToBackground(questionItems) {
+        chrome.extension.sendMessage({type: "questions:load", data: questionItems});
+        return questionItems;
+    }
+
+
     function toggleAllQuestions(e) {
         var $questions = $(e.target).parents().siblings(".seller").find(".question");
 
@@ -205,13 +212,13 @@ var QuestionsModule = (function QuestionsModule() {
     function _removeQuestion($question) {
         $question.hide("slide", {
             direction: "right",
-            /// todo check empty container...
             complete: function removeContainer() {
                 var $questionsContainer = $question.closest(".questions-container");
                 if ($questionsContainer.children(":visible").length === 0) {
                     var $item = $questionsContainer.closest("section.card");
                     _removeItem($item);
                 }
+                chrome.extension.sendMessage({type: "questions:remove"});
             },
             duration: "slow"
         });
