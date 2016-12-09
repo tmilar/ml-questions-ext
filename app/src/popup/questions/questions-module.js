@@ -177,11 +177,11 @@ var QuestionsModule = (function QuestionsModule() {
     }
 
     function _openQuestion($question) {
-        $question.removeClass('question--closed', 200).addClass('question--opened');
+        $question.removeClass('question--closed', 200).addClass('question--opened', _updateScroller);
     }
 
     function _closeQuestion($question) {
-        $question.addClass('question--closed', 200).removeClass('question--opened');
+        $question.addClass('question--closed', 200).removeClass('question--opened', _updateScroller);
     }
 
     function clickCloseQuestion(e) {
