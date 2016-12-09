@@ -84,7 +84,11 @@ var Auth = (function () {
                 return newUserLogin;
             })
             .catch(function (err) {
-                console.error("Login bad" + err, err);
+                console.error("Login bad: " + err);
+                var existingUser = _.find(User.getUsersArray(), {user: {nickname: err.username}});
+                if(existingUser.user) {
+                    showUserHeader(existingUser.user, err.message);
+                }
             })
             .finally(function () {
                 waitMe.stop('.container');

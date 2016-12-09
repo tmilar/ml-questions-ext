@@ -1,7 +1,17 @@
 <div class="user header" data-js="user-header" id="{{id}}">
-    <h1>Vendedor: <a class="user-link" href="{{permalink}}"><span class="username">{{nickname}}</span> ({{points}})</a></h1>
+    <h1>Vendedor: <a class="user-link" href="{{permalink}}"><span class="username">{{nickname}}</span> ({{points}})</a>
+    </h1>
     <a class="account__btn-delete u--clearfix">
         Eliminar cuenta<span class="ch-icon-trash"></span>
     </a>
-    <div class="status content" id="status-{{id}}"></div>
+    {{#if error}}
+        <div class="ch-box-icon ch-box-error auth-error">
+            <i class="ch-icon-remove-sign"></i>
+            No se completó la autenticación{{#if nickname}} de {{nickname}}{{/if}}.
+        </div>
+    {{else}}
+        <div class="status content" id="status-{{id}}">
+            ...
+        </div>
+    {{/if}}
 </div>
