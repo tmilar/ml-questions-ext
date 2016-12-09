@@ -90,7 +90,8 @@ var QuestionsModule = (function QuestionsModule() {
 
     function showQuestions() {
         var loadingMsgs = ["Deployando a la NASA", "Macerando las uvas", "Volcando el yogur", "Leyendo el Quijote"];
-        waitMe.start({selector: ".questions", text: _.sample(loadingMsgs)});
+        var waitMeSelector = "#status-" + self.user.id;
+        waitMe.start({selector: waitMeSelector, text: _.sample(loadingMsgs)});
 
         return getMeliQuestions()
             .then(populateItems)
@@ -98,7 +99,8 @@ var QuestionsModule = (function QuestionsModule() {
             .then(toItemsGroups)
             .then(render)
             .then(function () {
-                waitMe.stop();
+                waitMe.stop(waitMeSelector);
+                $(waitMeSelector).hide();
             })
             .catch(function (err) {
                 console.error("Error al intentar recuperar info de las preguntas: " + err.message);

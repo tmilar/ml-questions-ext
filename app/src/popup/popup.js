@@ -17,8 +17,8 @@ var waitMe = {
     setText: function setText(text) {
         $(".waitMe_text").html(text);
     },
-    stop: function stop() {
-        $(waitMe.$el).waitMe('hide');
+    stop: function stop(selector) {
+        $(selector || waitMe.$el).waitMe('hide');
     }
 };
 

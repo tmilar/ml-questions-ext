@@ -52,15 +52,16 @@ var Auth = (function () {
                 newUserLogin.user = data;
                 console.log("saving user info: ", newUserLogin);
                 User.addUser(newUserLogin);
-                waitMe.stop();
                 return newUserLogin;
             })
             .then(function (user) {
                 self.trigger('login', user);
             })
             .catch(function (err) {
-                console.error("Login bad: " + err.stack);
-                waitMe.setText("Login error. Please retry.");
+                console.error("Login bad" + err, err);
+            })
+            .finally(function () {
+                waitMe.stop();
             });
     }
 
