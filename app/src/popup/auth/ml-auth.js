@@ -3,24 +3,28 @@ var Auth = (function () {
     var self = {};
 
     function _checkLogin(user) {
-        if (!user) {
-            console.error("BAD LOGIC: No user to check login with!", user);
+        return window.oauth2.checkToken(user);
+    }
+
+    function checkLoggedIn(user) {
+        if (!user || !_checkLogin(user)) {
+            console.log("[login] User was NOT logged in", user);
             return false;
         }
-        return window.oauth2.checkToken(user);
+        // user was logged already - exit early
+        console.log("[login] User was already logged in: ", user);
+        self.trigger('login', user);
+        return true;
     }
 
     function startLogin(user) {
 
-        if (user && _checkLogin(user)) {
-            // user was logged already - exit early
-            console.log("[login] User was already logged in: ", user);
-            self.trigger('login', user);
+        if (checkLoggedIn(user)) {
             return user;
         }
 
         // force start a new login
-        console.log("[login] User was NOT logged in, refreshing login: ", user);
+        console.log("[login] refreshing login: ", user);
         return startNewLogin(user);
     }
 
@@ -118,6 +122,32 @@ var Auth = (function () {
         doLogin(registeredUsers);
     }
 
+
+    function checkUsersForLogin(users) {
+        if (!users) {
+            console.log("Starting new user login");
+            return true;
+        }
+        if (!Array.isArray(users)) {
+            throw new Error("Received an unrecognized 'users' object, which is not an Array: \n" + JSON.stringify(users));
+        }
+
+        if (_.isEmpty(users)) {
+            console.log("There are no registered users to login. Please, register some users first");
+            return false;
+        }
+
+        var notLoggedUsers = _.filter(users, _.negate(checkLoggedIn));
+
+        if (_.isEmpty(notLoggedUsers)) {
+            console.log("All existing users were already logged in! ", users);
+            return false;
+        }
+
+        console.log("There are ", notLoggedUsers.length ,"users to login");
+        return true;
+    }
+
     /**
      *  Execute whole login sequence for a new user, or already existing users
      *
@@ -133,10 +163,10 @@ var Auth = (function () {
      * @returns void
      */
     function doLogin(users) {
-        if (Array.isArray(users) && _.isEmpty(users)) {
-            console.log("There are no registered users to login. Please, register some users first");
+        if (!checkUsersForLogin(users)) {
             return;
         }
+
         var cookies;
 
         var cookiesSaveAllPromise = function () {
@@ -165,12 +195,22 @@ var Auth = (function () {
                 console.log("Login phase finished!", users);
             })
             .then(cookiesRestoreAllPromise)
-            .then(function log(cs) {
-                console.log("Restored all original cookies!", cs.length);
+            .then(function logResult(cs) {
+                var saved = cookies.length;
+                var restored = cs.length;
+                if (saved !== restored) {
+                    console.error("Couldn't restore all cookies: only " + restored + " out of " + saved);
+                } else {
+                    console.log("Restored all original cookies!", restored);
+                }
             });
     }
 
-    // return promise that process logins, of a new (empty) user, or an array of existing ones
+    /**
+     *
+     * @param users|undefined - undefined for new login, pre-registered users for existing login
+     * @returns Promise<login(users)> - resolves to an array of [user|undefined]
+     */
     function processLogins(users) {
         if (users === undefined) {
             // new login

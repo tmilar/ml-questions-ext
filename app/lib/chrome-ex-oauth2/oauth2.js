@@ -1,7 +1,7 @@
 function LoginAbortException(username) {
     this.name = 'LoginAbort';
     this.username = username;
-    this.message = 'Error, login ' + ( username ? 'for user ' + username + ' aborted!' : '' );
+    this.message = 'Error, login ' + ( username ? 'for user ' + username : '' ) + ' aborted!';
     this.stack = (new Error()).stack;
 }
 LoginAbortException.prototype = new Error;
