@@ -136,7 +136,7 @@ var Auth = (function () {
             return false;
         }
 
-        var notLoggedUsers = _.filter(users, _.negate(checkLoggedIn));
+        var notLoggedUsers = _.remove(users, checkLoggedIn);
 
         if (_.isEmpty(notLoggedUsers)) {
             console.log("All existing users were already logged in! ", users);
