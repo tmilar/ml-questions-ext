@@ -61,31 +61,10 @@ var QuestionsModule = (function QuestionsModule() {
             return;
         }
 
-        var alreadyLoggedUsers = $(".username").map(function () {
-            return $(this).text()
-        }).toArray();
-
-        if (alreadyLoggedUsers.indexOf(loggedUser.user.nickname) > -1) {
-            console.error("User " + loggedUser.user.nickname + " was already logged in! No new questions added.");
-            return;
-        }
-
         self.user = loggedUser.user;
         self.token = loggedUser.token;
 
-        showUserHeader();
         showQuestions();
-    }
-
-    function showUserHeader() {
-        var user = self.user;
-        var compiledHbs = MeliPreguntasApp.templates['questions-view'](user);
-        var $target = $(".questions.content");
-
-        console.log("Rendering user header: ", user);
-
-        $target.append(compiledHbs);
-
     }
 
     function showQuestions() {

@@ -13,7 +13,7 @@ var Auth = (function () {
         }
         // user was logged already - exit early
         console.log("[login] User was already logged in: ", user);
-        self.trigger('login', user);
+        finishLogin(user);
         return true;
     }
 
@@ -26,6 +26,34 @@ var Auth = (function () {
         // force start a new login
         console.log("[login] refreshing login: ", user);
         return startNewLogin(user);
+    }
+
+    function finishLogin(auth) {
+        showUserHeader(auth.user);
+        self.trigger('login', auth);
+    }
+
+
+    function showUserHeader(user, errorMessage) {
+
+        var alreadyLoggedUsers = $(".username").map(function () {
+            return $(this).text()
+        }).toArray();
+
+        if (alreadyLoggedUsers.indexOf(user.nickname) > -1) {
+            console.error("User " + user.nickname + " was already logged in!");
+            return;
+        }
+
+        if(errorMessage) {
+            user.error = errorMessage;
+        }
+        var compiledHbs = MeliPreguntasApp.templates['questions-view'](user);
+        var $target = $(".questions.content");
+
+        console.log("Rendering user header: ", user);
+
+        $target.append(compiledHbs);
     }
 
     function startNewLogin(user) {
@@ -52,7 +80,7 @@ var Auth = (function () {
                 newUserLogin.user = data;
                 console.log("saving user info: ", newUserLogin);
                 User.addUser(newUserLogin);
-                self.trigger('login', newUserLogin);
+                finishLogin(newUserLogin);
                 return newUserLogin;
             })
             .catch(function (err) {
