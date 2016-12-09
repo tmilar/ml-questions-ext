@@ -1,0 +1,35 @@
+<section class="app-container clearfix" id="app-container">
+    <div><!-- questions.questions.main -->
+
+        <header class="myml-header u--clearfix" data-js="header"><!-- questions.header -->
+
+            <h1 class="main-title title title--primary" data-js="main-title">
+                Preguntas (<span class="questions-total" data-js="questions-total">{{total}}</span>)
+            </h1>
+
+            {{#if total}}
+                <div class="open-all">
+                    <input type="checkbox" data-js="open-all" name="questions-open-checkbox"
+                           id="questions-open-checkbox" value="">
+                    <label for="questions-open-checkbox">Desplegar todas</label>
+                </div>
+            {{/if}}
+
+        </header>
+        <!-- /questions.header -->
+
+        <div id="main-questions" class="seller">
+            {{#if total}}
+                {{#each itemsGroups}}
+                    {{> items-group this}}
+                {{/each}}
+            {{else}}
+                <p><i>No hay preguntas...</i></p>
+            {{/if}}
+        </div>
+
+        <div class="ch-loading ch-loading-small pagination-link-spinner"
+             data-js="pagination-link-spinner"></div>
+        <!-- /questions.questions.main -->
+    </div>
+</section>
