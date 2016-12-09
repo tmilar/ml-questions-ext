@@ -52,10 +52,8 @@ var Auth = (function () {
                 newUserLogin.user = data;
                 console.log("saving user info: ", newUserLogin);
                 User.addUser(newUserLogin);
+                self.trigger('login', newUserLogin);
                 return newUserLogin;
-            })
-            .then(function (user) {
-                self.trigger('login', user);
             })
             .catch(function (err) {
                 console.error("Login bad" + err, err);
