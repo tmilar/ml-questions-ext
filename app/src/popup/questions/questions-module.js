@@ -299,6 +299,34 @@ var QuestionsModule = (function QuestionsModule() {
         });
     }
 
+    function deleteQuestion(question_id) {
+        return $.ajax({
+            type: 'DELETE',
+            url: 'https://api.mercadolibre.com/questions/' + question_id + '?'
+            + 'access_token=' + self.token,
+            error: function error(e) {
+                var errMsg = "Descr: DELETE question for user " + self.user.id + ", question: " + question_id + ". Status: " + e.status;
+                e.message = errMsg;
+                return e;
+            }
+        });
+    }
+
+    function clickDeleteButton(e) {
+        e.stopPropagation();
+        e.preventDefault();
+        var $question = $(this).closest(".question");
+        var question_id = parseInt($question.attr('id'), 10);
+
+        deleteQuestion(question_id)
+            .then(_removeQuestion.bind(null, $question))
+            .catch(function (err) {
+                $question.find(".server-error").show();
+                _animateAnswerError($question);
+                console.error("Error al eliminar pregunta! " + err.message);
+            })
+    }
+
     function render(questionsData) {
         var compiledHbs = MeliPreguntasApp.templates['questions-section'](questionsData, {
             helpers: {
@@ -333,6 +361,9 @@ var QuestionsModule = (function QuestionsModule() {
 
         // Remove account
         $userSection.find('.account__btn-delete').on('click', clickRemoveAccount);
+
+        // Delete question
+        $userSection.find('.question-replay__btn-delete, a[data-js="delete-modal-trigger"]').on('click', clickDeleteButton);
 
         // Update scroller
         _updateScroller();
