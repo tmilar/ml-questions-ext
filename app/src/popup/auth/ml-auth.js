@@ -48,7 +48,7 @@ var Auth = (function () {
         if(errorMessage) {
             user.error = errorMessage;
         }
-        var compiledHbs = MeliPreguntasApp.templates['questions-view'](user);
+        var compiledHbs = MeliPreguntasApp.templates['user-content'](user);
         var $target = $(".questions.content");
 
         console.log("Rendering user header: ", user);
