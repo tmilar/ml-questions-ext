@@ -59,7 +59,7 @@ var Auth = (function () {
                 console.error("Login bad" + err, err);
             })
             .finally(function () {
-                waitMe.stop();
+                waitMe.stop('.container');
             });
     }
 
