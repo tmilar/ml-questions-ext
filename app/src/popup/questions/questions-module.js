@@ -106,6 +106,7 @@ var QuestionsModule = (function QuestionsModule() {
                 console.error("Error al intentar recuperar info de las preguntas: " + err.message);
             });
     }
+
     /*
      * ==================
      * ML API calls
@@ -296,6 +297,13 @@ var QuestionsModule = (function QuestionsModule() {
             helpers: {
                 toJSON: function (object) {
                     return JSON.stringify(object, undefined, 2);
+                },
+                fromNow: function (datetime) {
+                    moment.locale("es");
+                    return moment(datetime).fromNow();
+                },
+                capitalize: function (str) {
+                    return str[0].toUpperCase() + str.slice(1);
                 }
             }
         });

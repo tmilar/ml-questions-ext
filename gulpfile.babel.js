@@ -119,6 +119,9 @@ gulp.task('wiredep', () => {
       overrides: {
         handlebars: {
           main: "handlebars.runtime.js"
+        },
+        moment: {
+          main: ["moment.js", "locale/es.js"]
         }
       },
       exclude: ["underscore.js"]
