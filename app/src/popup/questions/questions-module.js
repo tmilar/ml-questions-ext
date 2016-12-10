@@ -54,6 +54,21 @@ var QuestionsModule = (function QuestionsModule() {
         return usersPromise.thenReturn(questionsData);
     }
 
+    function populateQuestionsHistory(questionsData) {
+        if (!questionsData.total) return questionsData;
+
+        var questionsWithHistory = _.filter(questionsData.questions, 'from.answered_questions');
+
+        var questionsHistoryPromise = Promise.map(questionsWithHistory, function (q) {
+            return getMeliQuestions({status: "ANSWERED", fromId: q.from.id, itemId: q.item_id})
+                .then(function (historicQuestions) {
+                    q.from.answer_history = historicQuestions;
+                });
+        });
+
+        return questionsHistoryPromise.thenReturn(questionsData);
+    }
+
     function initialize(loggedUser) {
 
         if (!loggedUser || !loggedUser.user.id || !loggedUser.token) {
@@ -75,6 +90,7 @@ var QuestionsModule = (function QuestionsModule() {
         return getMeliQuestions()
             .then(populateItems)
             .then(populateFromUsers)
+            .then(populateQuestionsHistory)
             .then(toItemsGroups)
             .then(sendToBackground)
             .then(render)
@@ -239,7 +255,7 @@ var QuestionsModule = (function QuestionsModule() {
         e.stopPropagation();
         e.preventDefault();
         var $question = $(this).closest(".question");
-        //TODO validate and display err
+
         validateAnswerNotEmpty($question);
         validateAnswerNoSpecialChars($question);
 
