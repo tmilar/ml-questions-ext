@@ -34,10 +34,17 @@ var Auth = (function () {
     }
 
 
+    function clickLoginRetry(user, event) {
+        $("#main-" + user.id).remove();
+        doLogin([{user: user}]);
+    }
+
     function showUserHeader(user, errorMessage) {
 
-        var alreadyLoggedUsers = $(".username").map(function () {
-            return $(this).text()
+        var alreadyLoggedUsers = $(".username").filter(function () {
+            return $(this).parents().siblings(".auth-error").length === 0;
+        }).map(function () {
+            return $(this).text();
         }).toArray();
 
         if (alreadyLoggedUsers.indexOf(user.nickname) > -1) {
@@ -45,15 +52,19 @@ var Auth = (function () {
             throw new Error(errMsg);
         }
 
-        if(errorMessage) {
+        if (errorMessage) {
             user.error = errorMessage;
         }
+        console.log("Rendering user header: ", user);
         var compiledHbs = MeliPreguntasApp.templates['user-content'](user);
         var $target = $(".questions.content");
 
-        console.log("Rendering user header: ", user);
-
         $target.append(compiledHbs);
+
+        if (user.error) {
+            var $userHeader = $target.find("#" + user.id);
+            $userHeader.find(".auth-retry").on("click", clickLoginRetry.bind(null, user));
+        }
     }
 
     function startNewLogin(user) {

@@ -7,7 +7,7 @@
     {{#if error}}
         <div class="ch-box-icon ch-box-error auth-error">
             <i class="ch-icon-remove-sign"></i>
-            No se completó la autenticación{{#if nickname}} de {{nickname}}{{/if}}.
+            No se completó la autenticación{{#if nickname}} de {{nickname}}. <a class="auth-retry">Reintentar</a>{{else}}.{{/if}}
         </div>
     {{else}}
         <div class="status content" id="status-{{id}}">
