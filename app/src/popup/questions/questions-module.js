@@ -92,12 +92,16 @@ var QuestionsModule = (function QuestionsModule() {
      * ML API calls
      * ==================
      */
-    function getMeliQuestions() {
+    function getMeliQuestions(options) {
         return $.ajax({
             type: 'GET',
-            url: 'https://api.mercadolibre.com/questions/search' + '?' + 'seller_id=' + self.user.id + '&access_token=' + self.token + '&status=' + 'UNANSWERED',
+            url: 'https://api.mercadolibre.com/questions/search' + '?'
+            + 'status=' + (options && options.status ? options.status : 'UNANSWERED')
+            + (options && options.fromId ? '&from=' + options.fromId : '&seller_id=' + self.user.id)
+            + (options && options.itemId ? '&item=' + options.itemId : '')
+            + '&access_token=' + self.token,
             error: function error(e, a, c) {
-                var errMsg = "Descr: GET questions for user " + self.user.id + ". Msg: " + e.responseJSON.message;
+                var errMsg = "Descr: GET questions for user " + self.user.id + ". Msg: " + (e.responseJSON ? e.responseJSON.message : e || a);
                 console.error(errMsg, e);
                 e.message = errMsg;
             }
