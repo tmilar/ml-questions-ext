@@ -29,14 +29,14 @@
 
     {{#if from.answered_questions}}
         <div data-js="questions-old">
-            <div id="4420037623"><!-- questions.iteratorHistory -->
+            <div id="{{id}}"><!-- questions.iteratorHistory -->
                 <div data-js="history-container" class="questions-history">
                     <input type="checkbox" class="more-actions-input css-dropdown-input"
-                           id="old-questions-trigger4420037623">
+                           id="old-questions-trigger{{id}}">
 
                     <div class="css-dropdown-content">
                         <label class="questions-history__btn css-dropdown-label " tabindex="0"
-                               for="old-questions-trigger4420037623" data-js="questions-history-label">
+                               for="old-questions-trigger{{id}}" data-js="questions-history-label">
                             <span class="show-string">{{from.answered_questions}} preguntas anteriores</span>
                             <span class="hide-string">Ocultar preguntas</span>
                         </label>
