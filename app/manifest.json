@@ -4,8 +4,9 @@
   "manifest_version": 2,
   "description": "__MSG_appDescription__",
   "icons": {
-    "16": "images/icon-16.png",
-    "128": "images/icon-128.png"
+    "16": "images/melipreguntas-64.png",
+    "128": "images/melipreguntas-128.png",
+    "256": "images/melipreguntas.png"
   },
   "default_locale": "en",
   "background": {
@@ -24,8 +25,8 @@
   ],
   "browser_action": {
     "default_icon": {
-      "16": "images/meliP_32x32.png",
-      "32": "images/meliP_32x32.png"
+      "16": "images/melipreguntas.png",
+      "32": "images/melipreguntas.png"
     },
     "default_title": "MeliPreguntas",
     "default_popup": "popup.html"
