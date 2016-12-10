@@ -20,6 +20,11 @@ var QuestionsModule = (function QuestionsModule() {
             _.each(itemsData, function (itemData) {
                 var questionsForItem = questionsByItemId[itemData.id];
                 _.each(questionsForItem, function (q) {
+                    if(itemData.status !== "active") {
+                        _.pull(questionsData.questions, q);
+                        questionsData.total--;
+                        return;
+                    }
                     q.item = itemData;
                 })
             });
