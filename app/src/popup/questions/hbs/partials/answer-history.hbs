@@ -1,0 +1,32 @@
+<div class="css-dropdown-options" data-js="css-dropdown-options"><!-- questions.answerHistory.hbs -->
+    <div class="questions-history__content">
+        <div class="table-list__item">
+            {{#each this}}
+                <article class="question question--answer " data-js="answer-row">
+                    <div class="u--arrange-fit">
+                        <i class="question__icon ch-icon-comment"></i>
+                    </div>
+                    <div class="u--arrange-fill">
+                        <p class="question__text">
+                            {{answer.text}}
+                        </p>
+                    </div>
+                </article>
+
+                <article class="question question--question ">
+                    <div class="u--arrange-fit">
+                        <i class="question__icon ch-icon-comment"></i>
+                    </div>
+                    <div class="u--arrange-fill">
+                        <p class="question__text">
+                            {{text}}
+                        </p>
+
+                        <p class="question__date">{{fromNow date_created}}</p>
+                    </div>
+                </article>
+            {{/each}}
+        </div>
+    </div>
+    <!-- questions.answerHistory.hbs -->
+</div>

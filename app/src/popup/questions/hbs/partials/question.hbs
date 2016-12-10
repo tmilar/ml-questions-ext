@@ -40,8 +40,9 @@
                             <span class="show-string">{{from.answered_questions}} preguntas anteriores</span>
                             <span class="hide-string">Ocultar preguntas</span>
                         </label>
-
-                        <div class="css-dropdown-options" data-js="css-dropdown-options"></div>
+                        <div class="css-dropdown-options" data-js="css-dropdown-options">
+                            {{>answer-history from.answer_history.questions}}
+                        </div>
                     </div>
                 </div>
                 <!-- /questions.iteratorHistory -->
