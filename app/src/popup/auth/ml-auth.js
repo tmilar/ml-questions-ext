@@ -41,8 +41,8 @@ var Auth = (function () {
         }).toArray();
 
         if (alreadyLoggedUsers.indexOf(user.nickname) > -1) {
-            console.error("User " + user.nickname + " was already logged in!");
-            return;
+            var errMsg = "User " + user.nickname + " was already logged in!";
+            throw new Error(errMsg);
         }
 
         if(errorMessage) {
@@ -86,7 +86,7 @@ var Auth = (function () {
             .catch(function (err) {
                 console.error("Login bad: " + err);
                 var existingUser = _.find(User.getUsersArray(), {user: {nickname: err.username}});
-                if(existingUser.user) {
+                if (existingUser && existingUser.user) {
                     showUserHeader(existingUser.user, err.message);
                 }
             })
@@ -168,14 +168,14 @@ var Auth = (function () {
             return false;
         }
 
-        var notLoggedUsers = _.remove(users, checkLoggedIn);
+        var loggedUsers = _.remove(users, checkLoggedIn);
 
-        if (_.isEmpty(notLoggedUsers)) {
-            console.log("All existing users were already logged in! ", users);
+        if (_.isEmpty(users)) {
+            console.log("All existing users were already logged in! ", loggedUsers);
             return false;
         }
 
-        console.log("There are ", notLoggedUsers.length ,"users to login");
+        console.log("There are ", users.length, "users to login");
         return true;
     }
 
