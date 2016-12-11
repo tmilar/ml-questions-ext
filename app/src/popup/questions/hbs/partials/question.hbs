@@ -3,6 +3,29 @@
          id="{{id}}">    <!-- questions.question.hbs -->
     <div data-js="questions-old"></div>
 
+    {{#if from.answered_questions}}
+        <div data-js="questions-old">
+            <div id="{{id}}"><!-- questions.iteratorHistory -->
+                <div data-js="history-container" class="questions-history">
+                    <input type="checkbox" class="more-actions-input css-dropdown-input"
+                           id="old-questions-trigger{{id}}">
+
+                    <div class="css-dropdown-content">
+                        <label class="questions-history__btn css-dropdown-label " tabindex="0"
+                               for="old-questions-trigger{{id}}" data-js="questions-history-label">
+                            <span class="show-string">{{from.answered_questions}} preguntas anteriores</span>
+                            <span class="hide-string">Ocultar preguntas</span>
+                        </label>
+                        <div class="css-dropdown-options" data-js="css-dropdown-options">
+                            {{>answer-history from.answer_history.questions}}
+                        </div>
+                    </div>
+                </div>
+                <!-- /questions.iteratorHistory -->
+            </div>
+        </div>
+    {{/if}}
+
     <div class="action-block action-block--alt" data-js="question__link">
         <!--data-href="#/preguntas/vendedor/{{id}}"-->
         <div class="u--arrange-fit">
@@ -26,29 +49,6 @@
             </div>
         </div>
     </div>
-
-    {{#if from.answered_questions}}
-        <div data-js="questions-old">
-            <div id="{{id}}"><!-- questions.iteratorHistory -->
-                <div data-js="history-container" class="questions-history">
-                    <input type="checkbox" class="more-actions-input css-dropdown-input"
-                           id="old-questions-trigger{{id}}">
-
-                    <div class="css-dropdown-content">
-                        <label class="questions-history__btn css-dropdown-label " tabindex="0"
-                               for="old-questions-trigger{{id}}" data-js="questions-history-label">
-                            <span class="show-string">{{from.answered_questions}} preguntas anteriores</span>
-                            <span class="hide-string">Ocultar preguntas</span>
-                        </label>
-                        <div class="css-dropdown-options" data-js="css-dropdown-options">
-                            {{>answer-history from.answer_history.questions}}
-                        </div>
-                    </div>
-                </div>
-                <!-- /questions.iteratorHistory -->
-            </div>
-        </div>
-    {{/if}}
 
     <div data-js="answer-form">
         {{#if from.email}}
