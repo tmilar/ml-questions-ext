@@ -334,7 +334,7 @@ var QuestionsModule = (function QuestionsModule() {
 
         console.log("Loading questions data.. ", questionsData);
 
-        var $userSection = $("#" + self.user.id).parent();
+        var $userSection = $("#" + self.user.id).find(".questions");
         $userSection.append(compiledHbs);
         /* View Events */
         // Open/Close
