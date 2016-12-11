@@ -9,10 +9,9 @@ var openQuestions = 0;
 chrome.browserAction.setBadgeBackgroundColor({color: "#FF0000"});
 
 function updateBadgeText(value) {
-    if (value !== 0) {
-        chrome.browserAction.setBadgeText({text: value.toString()});
-    }
+    chrome.browserAction.setBadgeText({text: value ? value.toString() : ''});
 }
+
 chrome.extension.onMessage.addListener(function (request, sender, sendResponse) {
     console.debug("message received > ", request);
     switch (request.type) {
