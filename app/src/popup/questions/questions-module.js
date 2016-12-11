@@ -296,12 +296,7 @@ var QuestionsModule = (function QuestionsModule() {
         }
     }
 
-    function _updateScroller() {
-        $(".nano").nanoScroller({
-            // this is needed due to some bug that triggers infinite resets...
-            disableResize: true
-        });
-    }
+
 
     function deleteQuestion(question_id) {
         return $.ajax({

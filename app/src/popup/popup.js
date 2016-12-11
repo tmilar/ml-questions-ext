@@ -27,6 +27,12 @@ function loginSuccess(user) {
     QuestionsModule().initialize(user);
 }
 
+function _updateScroller() {
+    $(".nano").nanoScroller({
+        // this is needed due to some bug that triggers infinite resets...
+        disableResize: true
+    });
+}
 chrome.extension.sendMessage({type: "questions:restart"});
 
 $(document).ready(function () {
@@ -36,4 +42,5 @@ $(document).ready(function () {
     $(".add-account").on('click', function () {
         Auth.newLogin();
     });
+    _updateScroller();
 });
