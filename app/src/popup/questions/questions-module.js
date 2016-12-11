@@ -226,6 +226,12 @@ var QuestionsModule = (function QuestionsModule() {
                     var $item = $questionsContainer.closest("section.card");
                     _removeItem($item);
                 }
+                // decrease total questions
+                $question.closest(".questions").find(".questions-total").each(function () {
+                    var totalQuestions = parseInt($(this).text(), 10);
+                    $(this).text(totalQuestions - 1);
+                });
+                // notify removed queston
                 chrome.extension.sendMessage({type: "questions:remove"});
             },
             duration: "slow"
