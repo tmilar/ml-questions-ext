@@ -189,7 +189,10 @@ var QuestionsModule = (function QuestionsModule() {
     }
 
     function _openQuestion($question) {
-        $question.removeClass('question--closed', 200).addClass('question--opened', _updateScroller);
+        $question.removeClass('question--closed', 200).addClass('question--opened', function(e) {
+            $question.find('textarea').focus();
+            _updateScroller();
+        });
     }
 
     function _closeQuestion($question) {
@@ -207,6 +210,7 @@ var QuestionsModule = (function QuestionsModule() {
     function clickOpenQuestion(e) {
         var $question = $(this).closest('.question--closed');
         _openQuestion($question);
+        $(this).find('textarea').focus();
     }
 
     function _removeItem($item) {
