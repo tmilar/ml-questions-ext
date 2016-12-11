@@ -281,20 +281,6 @@ var QuestionsModule = (function QuestionsModule() {
         $question.find(".ch-box-warn, .ch-box-error ").hide();
     }
 
-    function clickRemoveAccount(e) {
-        var $userHeader = $(e.target).closest('div[data-js="user-header"]');
-        var userId = $userHeader.attr("id");
-        var userName = $userHeader.find(".username").text();
-        var removeConfirm = confirm("Estas seguro que deseas remover la cuenta " + userName + "?");
-        if (removeConfirm) {
-            console.log("Eliminado el user ", userName, " (id: ", userId, ")");
-            Auth.removeUser(userId);
-            $userHeader.closest("main").hide("explode", {pieces: 50}, 1200, function () {
-                $(this).remove();
-                _updateScroller();
-            });
-        }
-    }
 
 
 
@@ -357,9 +343,6 @@ var QuestionsModule = (function QuestionsModule() {
 
         // Respond
         $userSection.find('.question-replay__btn-submit').on('click', clickRespondButton);
-
-        // Remove account
-        $userSection.find('.account__btn-delete').on('click', clickRemoveAccount);
 
         // Delete question
         $userSection.find('.question-replay__btn-delete, a[data-js="delete-modal-trigger"]').on('click', clickDeleteButton);

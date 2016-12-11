@@ -39,6 +39,21 @@ var Auth = (function () {
         doLogin([{user: user}]);
     }
 
+    function clickRemoveAccount(e) {
+        var $userHeader = $(e.target).closest('div[data-js="user-header"]');
+        var userId = $userHeader.attr("id");
+        var userName = $userHeader.find(".username").text();
+        var removeConfirm = confirm("Estas seguro que deseas remover la cuenta " + userName + "?");
+        if (removeConfirm) {
+            console.log("Eliminado el user ", userName, " (id: ", userId, ")");
+            Auth.removeUser(userId);
+            $userHeader.closest("main").hide("explode", {pieces: 50}, 1200, function () {
+                $(this).remove();
+                _updateScroller();
+            });
+        }
+    }
+
     function showUserHeader(user, errorMessage) {
 
         var alreadyLoggedUsers = $(".username").filter(function () {
@@ -61,10 +76,14 @@ var Auth = (function () {
 
         $target.append(compiledHbs);
 
+        var $userHeader = $target.find("#" + user.id);
+        
         if (user.error) {
-            var $userHeader = $target.find("#" + user.id);
             $userHeader.find(".auth-retry").on("click", clickLoginRetry.bind(null, user));
         }
+
+        // Remove account
+        $userHeader.find('.account__btn-delete').on('click', clickRemoveAccount);
     }
 
     function startNewLogin(user) {
