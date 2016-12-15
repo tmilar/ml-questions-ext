@@ -3,6 +3,7 @@
 var QuestionsModule = (function QuestionsModule() {
 
     var self = {};
+    var auth = {};
 
     function populateItems(questionsData) {
         if (!questionsData.total) return questionsData;
@@ -63,10 +64,9 @@ var QuestionsModule = (function QuestionsModule() {
         if (!questionsData.total) return questionsData;
 
         var questionsWithHistory = _.filter(questionsData.questions, 'from.answered_questions');
-        var auth = _.pick(self, "token", "user");
-
+        var auth = this;
         var questionsHistoryPromise = Promise.map(questionsWithHistory, function (q) {
-            return getQuestionsPromise(auth, {status: "ANSWERED", fromId: q.from.id, itemId: q.item_id})
+            return getQuestionsPromise.bind(auth)({status: "ANSWERED", fromId: q.from.id, itemId: q.item_id})
                 .then(function (historicQuestions) {
                     q.from.answer_history = historicQuestions;
                 });
@@ -85,6 +85,7 @@ var QuestionsModule = (function QuestionsModule() {
         self.user = loggedUser.user;
         self.token = loggedUser.token;
 
+        auth = _.pick(self, "token", "user");
         showQuestions();
     }
 
@@ -93,7 +94,7 @@ var QuestionsModule = (function QuestionsModule() {
         var waitMeSelector = "#status-" + self.user.id;
         waitMe.start({selector: waitMeSelector, text: _.sample(loadingMsgs)});
 
-        return getMeliQuestions()
+        return getMeliQuestions(auth)
             .then(sendToBackground)
             .then(render)
             .then(function () {
@@ -110,8 +111,9 @@ var QuestionsModule = (function QuestionsModule() {
      * ML API calls
      * ==================
      */
-    var getQuestionsPromise = function _getQuestionsPromise(auth, options) {
-        return $.ajax({
+    var getQuestionsPromise = function _getQuestionsPromise(options) {
+        var auth = this;
+        return Promise.resolve($.ajax({
             type: 'GET',
             url: 'https://api.mercadolibre.com/questions/search' + '?'
             + 'status=' + (options && options.status ? options.status : 'UNANSWERED')
@@ -123,14 +125,14 @@ var QuestionsModule = (function QuestionsModule() {
                 console.error(errMsg, e);
                 e.message = errMsg;
             }
-        })
+        }));
     };
 
-    function getMeliQuestions(options) {
+    function getMeliQuestions(auth, options) {
 
-        var auth = _.pick(self, "token", "user");
-
-        return getQuestionsPromise(auth, options)
+        return Promise.bind(auth)
+            .return(options)
+            .then(getQuestionsPromise)
             .then(populateItems)
             .then(populateFromUsers)
             .then(populateQuestionsHistory)
@@ -152,10 +154,11 @@ var QuestionsModule = (function QuestionsModule() {
     }
 
     function toItemsGroups(questionsData) {
+        var auth = this;
         var result = {
             total: questionsData.total,
             itemsGroups: [],
-            user: self.user
+            user: auth.user
         };
 
         if (!result.total) {
