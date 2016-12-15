@@ -15,7 +15,10 @@
       "src/bg/background.js",
       "src/popup/questions/questions-service.js",
       "lib/localStorage-extension.js",
-      "src/popup/auth/user-service.js"
+      "src/popup/auth/user-service.js",
+      "bower_components/jquery/dist/jquery.js",
+      "bower_components/lodash/lodash.js",
+      "bower_components/bluebird/js/browser/bluebird.js"
     ]
   },
   "permissions": [
