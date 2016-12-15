@@ -145,8 +145,9 @@ var QuestionsModule = (function QuestionsModule() {
             .then(toItemsGroups);
     }
 
-    function postAnswer(auth, text, question_id) {
-        return $.ajax({
+    function postAnswer(text, question_id) {
+        var auth = this;
+        return Promise.resolve($.ajax({
             type: 'POST',
             data: JSON.stringify({question_id: question_id, text: text}),
             url: 'https://api.mercadolibre.com/answers' + '?'
@@ -156,7 +157,7 @@ var QuestionsModule = (function QuestionsModule() {
                 e.message = errMsg;
                 return e;
             }
-        });
+        }));
     }
 
     function toItemsGroups(questionsData) {
@@ -294,7 +295,7 @@ var QuestionsModule = (function QuestionsModule() {
         var text = $question.find('textarea').val();
         var question_id = parseInt($question.attr('id'), 10);
 
-        postAnswer(text, question_id)
+        postAnswer.bind(auth)(text, question_id)
             .then(_removeQuestion.bind(null, $question))
             .catch(function (err) {
                 $question.find(".server-error").show();
@@ -309,17 +310,18 @@ var QuestionsModule = (function QuestionsModule() {
     }
 
 
-    function deleteQuestion(auth, question_id) {
-        return $.ajax({
+    function deleteQuestion(question_id) {
+        var auth = this;
+        return Promise.resolve($.ajax({
             type: 'DELETE',
             url: 'https://api.mercadolibre.com/questions/' + question_id + '?'
             + 'access_token=' + auth.token,
             error: function error(e) {
                 var errMsg = "Descr: DELETE question for user " + auth.user.id + ", question: " + question_id + ". Status: " + e.status;
                 e.message = errMsg;
-                return e;
+                throw e;
             }
-        });
+        }));
     }
 
     function clickDeleteButton(e) {
@@ -328,7 +330,7 @@ var QuestionsModule = (function QuestionsModule() {
         var $question = $(this).closest(".question");
         var question_id = parseInt($question.attr('id'), 10);
 
-        deleteQuestion(question_id)
+        deleteQuestion.bind(auth)(question_id)
             .then(_removeQuestion.bind(null, $question))
             .catch(function (err) {
                 $question.find(".server-error").show();
