@@ -12,7 +12,10 @@
   "background": {
     "scripts": [
       "src/bg/chromereload.js",
-      "src/bg/background.js"
+      "src/bg/background.js",
+      "src/popup/questions/questions-service.js",
+      "lib/localStorage-extension.js",
+      "src/popup/auth/user-service.js"
     ]
   },
   "permissions": [
