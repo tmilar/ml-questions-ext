@@ -40,7 +40,7 @@ function checkNewQuestions() {
     var users = UserService.getUsersArray();
 
     var countQuestions = Promise.reduce(users, function (count, user) {
-        return QuestionsService.getQuestions.bind(user)()
+        return QuestionsService.getQuestionsPopulated.bind(user)()
             .then(function (questionsData) {
                 return count + questionsData.total;
             });
@@ -83,7 +83,7 @@ function notifyNewQuestion(total) {
 function notifyOpenQuestions() {
     new Notification('Preguntas sin responder', {
         icon: 'images/melipreguntas-128.png',
-        body: "Hay " + openQuestions + " sin responder."
+        body: "Hay " + openQuestions + " preguntas sin responder."
     });
 }
 
@@ -92,5 +92,6 @@ function startUp() {
         setTimeout(startUp, 1000*90);
     });
 }
+setTimeout(startUp, 1000*5);
 
 setInterval(checkNewQuestions, 1000*60*4);
