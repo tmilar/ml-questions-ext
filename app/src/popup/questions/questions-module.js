@@ -24,7 +24,7 @@ var QuestionsModule = (function QuestionsModule() {
         var waitMeSelector = "#status-" + self.user.id;
         waitMe.start({selector: waitMeSelector, text: _.sample(loadingMsgs)});
 
-        return QuestionsService.getQuestions(auth)
+        return QuestionsService.getQuestionsPopulated.bind(auth)()
             .then(sendToBackground)
             .then(render)
             .then(function () {

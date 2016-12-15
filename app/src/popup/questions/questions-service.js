@@ -123,14 +123,22 @@ var QuestionsService = (function QuestionsService() {
         }));
     };
 
-    function getMeliQuestions(auth, options) {
-
+    function getMeliQuestionsPopulated(options) {
+        var auth = this;
         return Promise.bind(auth)
             .return(options)
             .then(getQuestionsPromise)
             .then(populateItems)
             .then(populateFromUsers)
             .then(populateQuestionsHistory)
+            .then(toItemsGroups);
+    }
+
+    function getMeliQuestions(options) {
+        var auth = this;
+        return Promise.bind(auth)
+            .return(options)
+            .then(getQuestionsPromise)
             .then(toItemsGroups);
     }
 
@@ -165,6 +173,7 @@ var QuestionsService = (function QuestionsService() {
 
     return {
         getQuestions: getMeliQuestions,
+        getQuestionsPopulated: getMeliQuestionsPopulated,
         postAnswer: postAnswer,
         deleteQuestion: deleteQuestion
     };
