@@ -109,13 +109,13 @@ var Auth = (function () {
             .then(function (data) {
                 newUserLogin.user = data;
                 console.log("saving user info: ", newUserLogin);
-                User.addUser(newUserLogin);
+                UserService.addUser(newUserLogin);
                 finishLogin(newUserLogin);
                 return newUserLogin;
             })
             .catch(function (err) {
                 console.error("Login bad: " + err);
-                var existingUser = _.find(User.getUsersArray(), {user: {nickname: err.username}});
+                var existingUser = _.find(UserService.getUsersArray(), {user: {nickname: err.username}});
                 if (existingUser && existingUser.user) {
                     showUserHeader(existingUser.user, err.message);
                 }
@@ -125,7 +125,7 @@ var Auth = (function () {
             });
     }
 
-    var User = {
+    var UserService = {
         addUser: function (userInfo) {
             var users = localStorage.get('users');
 
@@ -179,7 +179,7 @@ var Auth = (function () {
         window.oauth2.options.full_url = "http://auth.mercadolibre.com.ar/authorization?response_type=token&client_id=" + clientId;
         window.oauth2.options.user_id = "user_id";
 
-        var registeredUsers = User.getUsersArray();
+        var registeredUsers = UserService.getUsersArray();
         doLogin(registeredUsers);
     }
 
@@ -284,7 +284,7 @@ var Auth = (function () {
 
     return _.extend(self, {
         init: init,
-        removeUser: User.removeUser,
+        removeUser: UserService.removeUser,
         newLogin: doLogin
     });
 })();
