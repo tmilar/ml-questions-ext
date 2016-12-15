@@ -1,0 +1,74 @@
+{
+  "itemsGroups": [{
+    "item": {
+      "id": "MLA628649018",
+      "site_id": "MLA",
+      "title": "Cabañas Seis Personas, Semana Del 13 Al 20/08/2016",
+      "subtitle": " ",
+      "seller_id": 7231914,
+      "category_id": "MLA72030",
+      "official_store_id": null,
+      "price": 19000,
+      "base_price": 19000,
+      "original_price": null,
+      "currency_id": "ARS",
+      "initial_quantity": 1,
+      "available_quantity": 1,
+      "sold_quantity": 0,
+      "buying_mode": "classified",
+      "listing_type_id": "bronze",
+      "start_time": "2016-07-23T22:56:16.000Z",
+      "stop_time": "2016-10-21T22:56:16.000Z",
+      "condition": null,
+      "permalink": "http://servicio.mercadolibre.com.ar/MLA-628649018-cabanas-seis-personas-semana-del-13-al-20082016-_JM",
+      "thumbnail": "http://mla-s1-p.mlstatic.com/834321-MLA20752827948_062016-I.jpg",
+      "secure_thumbnail": "https://mla-s1-p.mlstatic.com/834321-MLA20752827948_062016-I.jpg",
+      "pictures": [
+        {
+          "id": "834321-MLA20752827948_062016",
+          "url": "http://mla-s1-p.mlstatic.com/834321-MLA20752827948_062016-O.jpg",
+          "secure_url": "https://mla-s1-p.mlstatic.com/834321-MLA20752827948_062016-O.jpg",
+          "size": "500x375",
+          "max_size": "1200x900",
+          "quality": ""
+        }
+      ]
+    },
+    "questions": [{
+      "date_created": "2016-11-30T13:34:36.000-04:00",
+      "item_id": "MLA644867350",
+      "seller_id": 236258165,
+      "status": "UNANSWERED",
+      "text": "hola k ase",
+      "id": 4420012323,
+      "deleted_from_listing": false,
+      "hold": false,
+      "answer": null,
+      "from": {
+        "id": 236254433,
+        "first_name": "Test",
+        "last_name": "Test",
+        "phone": {
+          "number": "1111-1111",
+          "area_code": "01"
+        },
+        "email": "ttest.f207qh@mail.mercadolibre.com",
+        "answered_questions": 0
+      }
+    }, {
+      "date_created": "2016-11-30T13:35:27.000-04:00",
+      "item_id": "MLA644867129",
+      "seller_id": 236258165,
+      "status": "UNANSWERED",
+      "text": "a kuanto el pt",
+      "id": 4420013978,
+      "deleted_from_listing": false,
+      "hold": false,
+      "answer": null,
+      "from": {
+        "id": 236254433,
+        "answered_questions": 0
+      }
+    }]
+  }]
+}

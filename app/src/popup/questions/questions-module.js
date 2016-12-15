@@ -5,6 +5,12 @@ var QuestionsModule = (function QuestionsModule() {
     var self = {};
     var auth = {};
 
+    var QuestionsService = {
+        getQuestions: getMeliQuestions,
+        postAnswer: postAnswer,
+        deleteQuestion: deleteQuestion
+    };
+
     function populateItems(questionsData) {
         if (!questionsData.total) return questionsData;
         // for each q in data.questions
@@ -139,14 +145,14 @@ var QuestionsModule = (function QuestionsModule() {
             .then(toItemsGroups);
     }
 
-    function postAnswer(text, question_id) {
+    function postAnswer(auth, text, question_id) {
         return $.ajax({
             type: 'POST',
             data: JSON.stringify({question_id: question_id, text: text}),
             url: 'https://api.mercadolibre.com/answers' + '?'
-            + 'access_token=' + self.token,
+            + 'access_token=' + auth.token,
             error: function error(e) {
-                var errMsg = "Descr: POST answer for user " + self.user.id + ", question: " + question_id + ". Status: " + e.status;
+                var errMsg = "Descr: POST answer for user " + auth.user.id + ", question: " + question_id + ". Status: " + e.status;
                 e.message = errMsg;
                 return e;
             }
@@ -303,13 +309,13 @@ var QuestionsModule = (function QuestionsModule() {
     }
 
 
-    function deleteQuestion(question_id) {
+    function deleteQuestion(auth, question_id) {
         return $.ajax({
             type: 'DELETE',
             url: 'https://api.mercadolibre.com/questions/' + question_id + '?'
-            + 'access_token=' + self.token,
+            + 'access_token=' + auth.token,
             error: function error(e) {
-                var errMsg = "Descr: DELETE question for user " + self.user.id + ", question: " + question_id + ". Status: " + e.status;
+                var errMsg = "Descr: DELETE question for user " + auth.user.id + ", question: " + question_id + ". Status: " + e.status;
                 e.message = errMsg;
                 return e;
             }
