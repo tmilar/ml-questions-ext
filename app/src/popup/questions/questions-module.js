@@ -63,9 +63,10 @@ var QuestionsModule = (function QuestionsModule() {
         if (!questionsData.total) return questionsData;
 
         var questionsWithHistory = _.filter(questionsData.questions, 'from.answered_questions');
+        var auth = _.pick(self, "token", "user");
 
         var questionsHistoryPromise = Promise.map(questionsWithHistory, function (q) {
-            return getMeliQuestions({status: "ANSWERED", fromId: q.from.id, itemId: q.item_id})
+            return getQuestionsPromise(auth, {status: "ANSWERED", fromId: q.from.id, itemId: q.item_id})
                 .then(function (historicQuestions) {
                     q.from.answer_history = historicQuestions;
                 });
