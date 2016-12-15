@@ -93,10 +93,6 @@ var QuestionsModule = (function QuestionsModule() {
         waitMe.start({selector: waitMeSelector, text: _.sample(loadingMsgs)});
 
         return getMeliQuestions()
-            .then(populateItems)
-            .then(populateFromUsers)
-            .then(populateQuestionsHistory)
-            .then(toItemsGroups)
             .then(sendToBackground)
             .then(render)
             .then(function () {
@@ -133,7 +129,11 @@ var QuestionsModule = (function QuestionsModule() {
 
         var auth = _.pick(self, "token", "user");
 
-        return getQuestionsPromise(auth, options);
+        return getQuestionsPromise(auth, options)
+            .then(populateItems)
+            .then(populateFromUsers)
+            .then(populateQuestionsHistory)
+            .then(toItemsGroups);
     }
 
     function postAnswer(text, question_id) {
