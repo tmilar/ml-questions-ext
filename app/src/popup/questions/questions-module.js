@@ -20,7 +20,7 @@ var QuestionsModule = (function QuestionsModule() {
             _.each(itemsData, function (itemData) {
                 var questionsForItem = questionsByItemId[itemData.id];
                 _.each(questionsForItem, function (q) {
-                    if(itemData.status !== "active") {
+                    if (itemData.status !== "active") {
                         _.pull(questionsData.questions, q);
                         questionsData.total--;
                         return;
@@ -189,7 +189,7 @@ var QuestionsModule = (function QuestionsModule() {
     }
 
     function _openQuestion($question) {
-        $question.removeClass('question--closed', 200).addClass('question--opened', function(e) {
+        $question.removeClass('question--closed', 200).addClass('question--opened', function (e) {
             $question.find('textarea').focus();
             _updateScroller();
         });
@@ -290,8 +290,6 @@ var QuestionsModule = (function QuestionsModule() {
         var $question = $(this).closest(".question");
         $question.find(".ch-box-warn, .ch-box-error ").hide();
     }
-
-
 
 
     function deleteQuestion(question_id) {
